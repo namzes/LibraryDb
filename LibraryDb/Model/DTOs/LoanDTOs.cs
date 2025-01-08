@@ -15,6 +15,7 @@ namespace LibraryDb.Model.DTOs
 		public bool IsLate { get; set; }
 		public bool Returned { get; set; }
 	}
+	
 
 	public class LoanPostDto
 	{

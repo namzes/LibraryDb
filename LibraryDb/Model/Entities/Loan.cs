@@ -14,9 +14,7 @@ namespace LibraryDb.Model.Entities
 		public bool Returned { get; set; } = false;
 		public bool IsLate;
 		[Required]
-		public int BookCustomerId { get; set; }
-
-		public BookCustomer? BookCustomer { get; set; }
+		public required BookCustomer BookCustomer { get; set; }
 
 	}
 

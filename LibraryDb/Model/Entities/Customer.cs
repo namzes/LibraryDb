@@ -10,10 +10,10 @@ namespace LibraryDb.Model.Entities
 		[Required, Column(TypeName = "varchar(200)")]
 		public required string FirstName { get; set; }
 		[Required, Column(TypeName = "varchar(200)")]
-		public required string LastName { get; set; } = string.Empty;
+		public required string LastName { get; set; }
 
 		[Required, Column(TypeName = "varchar(200)")]
-		public required string Address { get; set; } = string.Empty;
+		public required string Address { get; set; }
 		[Required]
 		public required DateOnly BirthDate { get; set; }
 		public List<BookCustomer>? BookCustomers {get; set;}

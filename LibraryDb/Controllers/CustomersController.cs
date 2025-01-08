@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using LibraryDb.Model.Entities;
 using LibraryDb.Model.LibraryContext;
+using LibraryDb.Model.Mappers;
 
 namespace LibraryDb.Controllers
 {
@@ -41,10 +42,35 @@ namespace LibraryDb.Controllers
 
             return customer;
         }
+        [HttpGet("{id}/loans")]
+        public async Task<ActionResult<Customer>> GetCustomerLoans(int id)
+        {
+	        var customer = await _context.Customers.FindAsync(id);
+	        if (customer == null)
+	        {
+		        return NotFound();
+	        }
 
-        // PUT: api/Customers/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
+	        var bookTitles = await _context.Loans.Include(l => l.BookCustomer)
+		        .ThenInclude(bc => bc.Book)
+		        .ThenInclude(b => b.BookInfo)
+		        .Where(l => l.BookCustomer.Customer.Id == customer.Id)
+		        .Select(l => l.BookCustomer.Book.BookInfo.Title)
+		        .ToListAsync();
+
+	        var loanDates = await _context.Loans.Where(l => l.BookCustomer.Customer.Id == customer.Id)
+		        .Select(l => l.LoanDate)
+		        .ToListAsync();
+
+
+			
+
+	        return customer;
+        }
+
+		// PUT: api/Customers/5
+		// To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+		[HttpPut("{id}")]
         public async Task<IActionResult> PutCustomer(int id, Customer customer)
         {
             if (id != customer.Id)

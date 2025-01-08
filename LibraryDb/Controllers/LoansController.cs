@@ -28,7 +28,7 @@ namespace LibraryDb.Controllers
         public async Task<ActionResult<IEnumerable<LoanGetDto>>> GetLoans()
         {
 	        var loans = await _context.Loans.Include(l => l.BookCustomer).
-		        ThenInclude(bc => bc!.Book).
+		        ThenInclude(bc => bc.Book).
 		        ThenInclude(b => b.BookInfo).
 		        Include(l => l.BookCustomer!.Customer).
 		        ToListAsync();
@@ -113,7 +113,7 @@ namespace LibraryDb.Controllers
             {
 	            LoanDate = DateOnly.FromDateTime(DateTime.UtcNow),
 				ExpectedReturnDate = DateOnly.FromDateTime(DateTime.UtcNow).AddDays(10),
-				BookCustomerId = bc.Id
+				BookCustomer = bc
 			};
             
 
