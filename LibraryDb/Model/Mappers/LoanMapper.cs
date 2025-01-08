@@ -10,9 +10,9 @@ namespace LibraryDb.Model.Mappers
 			return new LoanGetDto()
 			{
 				LoanId = loan.Id,
-				BookId = loan.BookCustomer?.BookId ?? 0,
+				BookId = loan.BookCustomer?.Book.Id ?? 0,
 				BookTitle = loan.BookCustomer?.Book?.BookInfo?.Title ?? "Unknown",
-				CustomerId = loan.BookCustomer?.CustomerId ?? 0,
+				CustomerId = loan.BookCustomer?.Customer.Id ?? 0,
 				CustomerName = $"{loan.BookCustomer?.Customer?.FirstName ?? "Unknown"} {loan.BookCustomer?.Customer?.LastName ?? "Unknown"}",
 				LoanDate = loan.LoanDate,
 				ExpectedReturnDate = loan.ExpectedReturnDate,

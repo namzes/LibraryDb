@@ -27,8 +27,11 @@ namespace LibraryDb.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<LoanGetDto>>> GetLoans()
         {
-	        var loans = await _context.Loans.Include(l => l.BookCustomer).ThenInclude(bc => bc!.Book)
-		        .ThenInclude(b => b!.BookInfo).Include(l => l.BookCustomer!.Customer).ToListAsync();
+	        var loans = await _context.Loans.Include(l => l.BookCustomer).
+		        ThenInclude(bc => bc!.Book).
+		        ThenInclude(b => b.BookInfo).
+		        Include(l => l.BookCustomer!.Customer).
+		        ToListAsync();
 
 
             var loanDtos = _context.Loans.Select(loan => loan.ToLoanGetDto()).ToList();
@@ -86,20 +89,33 @@ namespace LibraryDb.Controllers
         [HttpPost]
         public async Task<ActionResult<LoanGetDto>> PostLoan(LoanPostDto loanDto)
         {
+	        var customer = await _context.Customers.FindAsync(loanDto.CustomerId);
+	        var book = await _context.Books.FindAsync(loanDto.BookId);
+	        if (book == null)
+	        {
+		        return NotFound();
+	        }
+
+	        if (customer == null)
+	        {
+		        return NotFound();
+	        }
 	        var bc = new BookCustomer()
 	        {
-		        CustomerId = loanDto.CustomerId,
-		        BookId = loanDto.BookId
+		        Customer = customer,
+		        Book = book
 	        };
+
             _context.BooksCustomers.Add(bc);
             await _context.SaveChangesAsync();
 
             var loan = new Loan()
             {
 	            LoanDate = DateOnly.FromDateTime(DateTime.UtcNow),
-            };
-            loan.ExpectedReturnDate = loan.LoanDate.AddDays(10);
-			loan.BookCustomerId = bc.Id;
+				ExpectedReturnDate = DateOnly.FromDateTime(DateTime.UtcNow).AddDays(10),
+				BookCustomerId = bc.Id
+			};
+            
 
             _context.Loans.Add(loan);
             await _context.SaveChangesAsync();

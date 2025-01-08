@@ -6,10 +6,8 @@ namespace LibraryDb.Model.Entities
 	{
 		public int Id { get; set; }
 		[Required]
-		public int BookId { get;set; }
-		public Book? Book { get; set; }
+		public required Book Book { get; set; }
 		[Required]
-		public int CustomerId { get; set; }
-		public Customer? Customer { get; set; }
+		public required Customer Customer { get; set; }
 	}
 }

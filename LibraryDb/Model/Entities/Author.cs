@@ -8,9 +8,9 @@ namespace LibraryDb.Model.Entities
 		public int Id { get; set; }
 
 		[Required, Column(TypeName = "varchar(200)")]
-		public string FirstName { get; set; } = string.Empty;
+		public required string FirstName { get; set; }
 		[Required, Column(TypeName = "varchar(200)")]
-		public string LastName { get; set; } = string.Empty;
+		public required string LastName { get; set; }
 		public int BookInfoId { get; set; }
 		public BookInfo? BookInfo { get; set; }
 	}

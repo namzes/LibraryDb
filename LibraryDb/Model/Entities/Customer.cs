@@ -8,14 +8,14 @@ namespace LibraryDb.Model.Entities
 		public int Id { get; set; }
 
 		[Required, Column(TypeName = "varchar(200)")]
-		public string FirstName { get; set; } = string.Empty;
+		public required string FirstName { get; set; }
 		[Required, Column(TypeName = "varchar(200)")]
-		public string LastName { get; set; } = string.Empty;
+		public required string LastName { get; set; } = string.Empty;
 
 		[Required, Column(TypeName = "varchar(200)")]
-		public string Address { get; set; } = string.Empty;
+		public required string Address { get; set; } = string.Empty;
 		[Required]
-		public DateOnly BirthDate { get; set; }
+		public required DateOnly BirthDate { get; set; }
 		public List<BookCustomer>? BookCustomers {get; set;}
 		
 	}
