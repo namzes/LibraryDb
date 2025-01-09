@@ -27,7 +27,7 @@ namespace LibraryDb.Model.Mappers
 				BirthDate = customer.BirthDate
 			};
 		}
-		public static CustomerGetLoanDto ToCustomerGetLoanDto(this Customer customer, List<string> bookTitles, List<DateOnly> loanDates)
+		public static CustomerGetLoanDto ToCustomerGetLoanDto(this Customer customer, List<BookLoanDate>? bookLoanDates)
 		{
 			return new CustomerGetLoanDto
 			{
@@ -35,9 +35,7 @@ namespace LibraryDb.Model.Mappers
 				LastName = customer.LastName,
 				Address = customer.Address,
 				BirthDate = customer.BirthDate,
-				BookTitles = bookTitles,
-				LoanDates = loanDates
-				
+				BookLoanDate = bookLoanDates
 			};
 		}
 

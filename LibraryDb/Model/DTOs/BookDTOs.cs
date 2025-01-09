@@ -4,17 +4,14 @@ using System.ComponentModel.DataAnnotations;
 
 namespace LibraryDb.Model.DTOs
 {
-	public class BookDto
+	public class BookGetDto
 	{
-		[Required, Column(TypeName = "varchar(20)")]
+		public required int Id { get; set; }
+		public required string BookTitle { get; set; }
 		public required string Isbn { get; set; }
-		[Required]
 		public int Edition { get; set; }
-		[Required, Range(1000, 9999, ErrorMessage = "ReleaseYear must be a 4-digit year.")]
 		public int ReleaseYear { get; set; }
-
 		public bool IsAvailable { get; set; } = true;
-		[Required]
-		public required BookInfo BookInfo { get; set; }
+		
 	}
 }

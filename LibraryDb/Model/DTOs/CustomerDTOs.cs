@@ -31,8 +31,13 @@ namespace LibraryDb.Model.DTOs
 		public required string LastName { get; set; }
 		public required string Address { get; set; }
 		public required DateOnly BirthDate { get; set; }
-		public List<string>? BookTitles { get; set; }
-		public List<DateOnly>? LoanDates { get; set; }
+		public List<BookLoanDate>? BookLoanDate { get; set; }
 		
+	}
+
+	public class BookLoanDate
+	{
+		public string? BookTitle { get; set; }
+		public DateOnly? LoanDate { get; set; }
 	}
 }

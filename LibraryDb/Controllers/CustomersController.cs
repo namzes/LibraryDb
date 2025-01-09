@@ -56,17 +56,14 @@ namespace LibraryDb.Controllers
 		        .ThenInclude(bc => bc.Book)
 		        .ThenInclude(b => b.BookInfo)
 		        .Where(l => l.BookCustomer.Customer.Id == customer.Id)
-		        .Select(l => new
+		        .Select(l => new BookLoanDate
 		        {
-			        Title = l.BookCustomer.Book.BookInfo.Title,
-                    LoanDate = l.LoanDate
+			        BookTitle = l.BookCustomer.Book.BookInfo.Title,
+			        LoanDate = l.LoanDate
 		        })
 		        .ToListAsync();
 
-	        var bookTitles = loanData.Select(t => t.Title).ToList();
-	        var loanDates = loanData.Select(l => l.LoanDate).ToList();
-
-	        return customer.ToCustomerGetLoanDto(bookTitles, loanDates);
+	        return Ok(customer.ToCustomerGetLoanDto(loanData));
         }
 
 		// PUT: api/Customers/5
@@ -110,7 +107,7 @@ namespace LibraryDb.Controllers
         // POST: api/Customers
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Customer>> PostCustomer(CustomerDto dto)
+        public async Task<ActionResult<CustomerDto>> PostCustomer(CustomerDto dto)
         {
 	        var customer = dto.ToCustomer();
             _context.Customers.Add(customer);
