@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using LibraryDb.Model.DTOs;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -24,14 +25,14 @@ namespace LibraryDb.Controllers
 
         // GET: api/Customers
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Customer>>> GetCustomers()
+        public async Task<ActionResult<IEnumerable<CustomerDto>>> GetCustomers()
         {
-            return await _context.Customers.ToListAsync();
+            return await _context.Customers.Select(c => c.ToCustomerDto()).ToListAsync();
         }
 
         // GET: api/Customers/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Customer>> GetCustomer(int id)
+        public async Task<ActionResult<CustomerDto>> GetCustomer(int id)
         {
             var customer = await _context.Customers.FindAsync(id);
 
@@ -40,10 +41,10 @@ namespace LibraryDb.Controllers
                 return NotFound();
             }
 
-            return customer;
+            return customer.ToCustomerDto();
         }
         [HttpGet("{id}/loans")]
-        public async Task<ActionResult<Customer>> GetCustomerLoans(int id)
+        public async Task<ActionResult<CustomerGetLoanDto>> GetCustomerLoans(int id)
         {
 	        var customer = await _context.Customers.FindAsync(id);
 	        if (customer == null)
@@ -51,32 +52,39 @@ namespace LibraryDb.Controllers
 		        return NotFound();
 	        }
 
-	        var bookTitles = await _context.Loans.Include(l => l.BookCustomer)
+	        var loanData = await _context.Loans.Include(l => l.BookCustomer)
 		        .ThenInclude(bc => bc.Book)
 		        .ThenInclude(b => b.BookInfo)
 		        .Where(l => l.BookCustomer.Customer.Id == customer.Id)
-		        .Select(l => l.BookCustomer.Book.BookInfo.Title)
+		        .Select(l => new
+		        {
+			        Title = l.BookCustomer.Book.BookInfo.Title,
+                    LoanDate = l.LoanDate
+		        })
 		        .ToListAsync();
 
-	        var loanDates = await _context.Loans.Where(l => l.BookCustomer.Customer.Id == customer.Id)
-		        .Select(l => l.LoanDate)
-		        .ToListAsync();
+	        var bookTitles = loanData.Select(t => t.Title).ToList();
+	        var loanDates = loanData.Select(l => l.LoanDate).ToList();
 
-
-			
-
-	        return customer;
+	        return customer.ToCustomerGetLoanDto(bookTitles, loanDates);
         }
 
 		// PUT: api/Customers/5
 		// To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
 		[HttpPut("{id}")]
-        public async Task<IActionResult> PutCustomer(int id, Customer customer)
+        public async Task<IActionResult> PutCustomer(int id, CustomerPutDto dto)
         {
-            if (id != customer.Id)
+	        var customer = await _context.Customers.FindAsync(id);
+
+            if (customer == null)
             {
-                return BadRequest();
+                return NotFound();
             }
+
+            if (dto.FirstName != null) customer.FirstName = dto.FirstName;
+            if (dto.LastName != null) customer.LastName = dto.LastName;
+            if (dto.Address != null) customer.Address = dto.Address;
+            if (dto.BirthDate.HasValue) customer.BirthDate = dto.BirthDate.Value;
 
             _context.Entry(customer).State = EntityState.Modified;
 
@@ -102,12 +110,13 @@ namespace LibraryDb.Controllers
         // POST: api/Customers
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Customer>> PostCustomer(Customer customer)
+        public async Task<ActionResult<Customer>> PostCustomer(CustomerDto dto)
         {
+	        var customer = dto.ToCustomer();
             _context.Customers.Add(customer);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetCustomer", new { id = customer.Id }, customer);
+            return CreatedAtAction("GetCustomer", new { id = customer.Id }, customer.ToCustomerDto());
         }
 
         // DELETE: api/Customers/5

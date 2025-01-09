@@ -56,12 +56,19 @@ namespace LibraryDb.Controllers
         // PUT: api/Loans/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutLoan(int id, Loan loan)
+        public async Task<IActionResult> PutLoan(int id, LoanPutDto dto)
         {
-            if (id != loan.Id)
+	        var loan = await _context.Loans.FindAsync(id);
+
+            if (loan == null)
             {
-                return BadRequest();
+                return NotFound();
             }
+
+            loan.LoanDate = dto.LoanDate;
+            loan.ExpectedReturnDate = dto.ExpectedReturnDate;
+            loan.ActualReturnDate = dto.ActualReturnDate;
+            loan.Returned = dto.Returned;
 
             _context.Entry(loan).State = EntityState.Modified;
 
@@ -75,12 +82,10 @@ namespace LibraryDb.Controllers
                 {
                     return NotFound();
                 }
-                else
-                {
-                    throw;
-                }
+                
+	            throw;
+                
             }
-
             return NoContent();
         }
 
@@ -100,14 +105,14 @@ namespace LibraryDb.Controllers
 	        {
 		        return NotFound();
 	        }
+	        book.IsAvailable = false;
 	        var bc = new BookCustomer()
 	        {
 		        Customer = customer,
 		        Book = book
 	        };
 
-            _context.BooksCustomers.Add(bc);
-            await _context.SaveChangesAsync();
+            _context.BooksCustomers.Add(bc); 
 
             var loan = new Loan()
             {
@@ -127,16 +132,24 @@ namespace LibraryDb.Controllers
         [HttpPatch("return/{id}")]
         public async Task<IActionResult> ReturnLoan(int id)
         {
-	        var loan = await _context.Loans.FindAsync(id);
+	        var loan = await _context.Loans
+		        .Include(l => l.BookCustomer)
+		        .ThenInclude(bc => bc.Book)
+		        .FirstOrDefaultAsync(l => l.Id == id);
+            
 	        if (loan == null)
 	        {
 		        return NotFound();
 	        }
+
             loan.Returned = true;
+            loan.BookCustomer.Book.IsAvailable = true;
             loan.ActualReturnDate = DateOnly.FromDateTime(DateTime.UtcNow);
             loan.IsLate = loan.Returned && loan.ActualReturnDate.HasValue &&
                           loan.ActualReturnDate > loan.ExpectedReturnDate;
 
+            _context.Loans.Entry(loan).State = EntityState.Modified;
+            _context.Books.Entry(loan.BookCustomer.Book).State = EntityState.Modified;
 
 			await _context.SaveChangesAsync();
 

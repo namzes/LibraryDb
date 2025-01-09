@@ -1,11 +1,11 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using LibraryDb.Model.Entities;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.ComponentModel.DataAnnotations;
 
-namespace LibraryDb.Model.Entities
+namespace LibraryDb.Model.DTOs
 {
-	public class Book
+	public class BookDto
 	{
-		public int Id { get; set; }
 		[Required, Column(TypeName = "varchar(20)")]
 		public required string Isbn { get; set; }
 		[Required]
@@ -16,6 +16,5 @@ namespace LibraryDb.Model.Entities
 		public bool IsAvailable { get; set; } = true;
 		[Required]
 		public required BookInfo BookInfo { get; set; }
-		public List<BookCustomer>? BookCustomers { get; set; }
 	}
 }

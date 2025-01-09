@@ -24,4 +24,13 @@ namespace LibraryDb.Model.DTOs
 		[Required]
 		public int CustomerId { get; set; }
 	}
+
+	public class LoanPutDto
+	{
+		public DateOnly LoanDate { get; set; }
+		public DateOnly ExpectedReturnDate { get; set; }
+		public DateOnly? ActualReturnDate { get; set; }
+		public bool Returned { get; set; }
+
+	}
 }

@@ -20,5 +20,6 @@ namespace LibraryDb.Model.Mappers
 				Returned = loan.Returned
 			};
 		}
+		
 	}
 }
