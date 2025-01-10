@@ -11,7 +11,6 @@ namespace LibraryDb.Model.Entities
 		public required string FirstName { get; set; }
 		[Required, Column(TypeName = "varchar(200)")]
 		public required string LastName { get; set; }
-		public int BookInfoId { get; set; }
-		public BookInfo? BookInfo { get; set; }
+		public List<BookInfoAuthor>? BookInfoAuthors { get; set; }
 	}
 }

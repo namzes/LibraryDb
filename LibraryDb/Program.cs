@@ -16,21 +16,11 @@ namespace LibraryDb
             builder.Services.AddControllers().AddJsonOptions(opt => opt.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
             // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
             builder.Services.AddOpenApi();
-            var connectionString = string.Empty;
+            
             var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
-            if (environment == "Development")
-            {
-	            connectionString = builder.Configuration.GetConnectionString("SqlBooksDb");
-            }
-            else if (environment == "Azure")
-            {
-	            connectionString = builder.Configuration.GetConnectionString("BooksDb");
-            }
-            else
-            {
-	            throw new InvalidOperationException("Environment is not set/valid");
-            }
-
+            
+	        var connectionString = builder.Configuration.GetConnectionString("BooksDb");
+	        
             builder.Services.AddDbContext<LibraryContext>(opt =>
 	            opt.UseSqlServer(connectionString).LogTo(Console.WriteLine, LogLevel.Information));
 

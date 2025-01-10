@@ -13,6 +13,6 @@ namespace LibraryDb.Model.Entities
 		[Range(1, 10, ErrorMessage = "Rating must be 1-10")]
 		public decimal Rating { get; set; }
 		public List<Book>? Books { get; set; }
-		public List<Author>? Authors { get; set; }
+		public List<BookInfoAuthor>? BookInfoAuthors { get; set; }
 	}
 }

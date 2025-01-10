@@ -2,11 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using LibraryDb.Model.DTOs;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using LibraryDb.Model.Entities;
 using LibraryDb.Model.LibraryContext;
+using LibraryDb.Model.Mappers;
 
 namespace LibraryDb.Controllers
 {
@@ -23,9 +25,9 @@ namespace LibraryDb.Controllers
 
         // GET: api/Books
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Book>>> GetBooks()
+        public async Task<ActionResult<IEnumerable<BookGetDto>>> GetBooks()
         {
-            return await _context.Books.ToListAsync();
+	        return await _context.Books.Include(b => b.BookInfo).Select(b => b.ToBookGetDto(b.BookInfo.Title)).ToListAsync();
         }
 
         // GET: api/Books/5

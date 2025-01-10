@@ -78,7 +78,7 @@ namespace LibraryDb.Controllers
                 return NotFound();
             }
 
-            if (dto.FirstName != null) customer.FirstName = dto.FirstName;
+			if (dto.FirstName != null) customer.FirstName = dto.FirstName;
             if (dto.LastName != null) customer.LastName = dto.LastName;
             if (dto.Address != null) customer.Address = dto.Address;
             if (dto.BirthDate.HasValue) customer.BirthDate = dto.BirthDate.Value;
