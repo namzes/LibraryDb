@@ -69,6 +69,7 @@ namespace LibraryDb.Controllers
             loan.ExpectedReturnDate = dto.ExpectedReturnDate;
             loan.ActualReturnDate = dto.ActualReturnDate;
             loan.Returned = dto.Returned;
+            
 
             _context.Entry(loan).State = EntityState.Modified;
 
@@ -94,12 +95,19 @@ namespace LibraryDb.Controllers
         [HttpPost]
         public async Task<ActionResult<LoanGetDto>> PostLoan(LoanPostDto loanDto)
         {
-	        var customer = await _context.Customers.FindAsync(loanDto.CustomerId);
 	        var book = await _context.Books.FindAsync(loanDto.BookId);
+
 	        if (book == null)
 	        {
 		        return NotFound();
 	        }
+
+			if (!book.IsAvailable)
+	        {
+		        return Conflict(new { Message = "The book is currently not available for loan." });
+	        }
+
+			var customer = await _context.Customers.FindAsync(loanDto.CustomerId);
 
 	        if (customer == null)
 	        {
@@ -136,11 +144,15 @@ namespace LibraryDb.Controllers
 		        .Include(l => l.BookCustomer)
 		        .ThenInclude(bc => bc.Book)
 		        .FirstOrDefaultAsync(l => l.Id == id);
-            
 	        if (loan == null)
 	        {
 		        return NotFound();
 	        }
+			if (loan.BookCustomer.Book.IsAvailable)
+	        {
+		        return Conflict(new { Message = "The book is already available and can not be returned" });
+			}
+	        
 
             loan.Returned = true;
             loan.BookCustomer.Book.IsAvailable = true;

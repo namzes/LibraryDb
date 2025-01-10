@@ -32,29 +32,45 @@ namespace LibraryDb.Controllers
 
         // GET: api/Books/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Book>> GetBook(int id)
+        public async Task<ActionResult<BookGetDto>> GetBook(int id)
         {
-            var book = await _context.Books.FindAsync(id);
+            var book = await _context.Books.Include(b => b.BookInfo).FirstOrDefaultAsync(b => b.Id == id);
 
             if (book == null)
             {
                 return NotFound();
             }
 
-            return book;
+            return book.ToBookGetDto(book.BookInfo.Title);
         }
 
         // PUT: api/Books/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutBook(int id, Book book)
+        public async Task<IActionResult> PutBook(int id, BookPutDto dto)
         {
-            if (id != book.Id)
+            
+	        var book = await _context.Books.Include(b => b.BookInfo).FirstOrDefaultAsync(b=> id == b.Id);
+
+            if (book == null)
             {
-                return BadRequest();
+                return NotFound();
             }
 
-            _context.Entry(book).State = EntityState.Modified;
+            if (dto.Isbn != null) book.Isbn = dto.Isbn;
+            if (dto.Edition.HasValue) book.Edition = dto.Edition.Value;
+            if (dto.ReleaseYear.HasValue) book.ReleaseYear = dto.ReleaseYear.Value;
+            if (dto.IsAvailable.HasValue) book.IsAvailable = dto.IsAvailable.Value;
+
+            if (dto.BookInfoId != null)
+            {
+				var bookInfo = _context.BookInfos.Find(dto.BookInfoId);
+
+	            if (bookInfo != null) book.BookInfo = bookInfo;
+            }
+				 
+           
+			_context.Entry(book).State = EntityState.Modified;
 
             try
             {
@@ -66,10 +82,7 @@ namespace LibraryDb.Controllers
                 {
                     return NotFound();
                 }
-                else
-                {
-                    throw;
-                }
+                throw;
             }
 
             return NoContent();
@@ -78,12 +91,20 @@ namespace LibraryDb.Controllers
         // POST: api/Books
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Book>> PostBook(Book book)
+        public async Task<ActionResult<BookGetDto>> PostBook(BookPostDto dto)
         {
+	        var bookInfo = await _context.BookInfos.FindAsync(dto.BookInfoId);
+	        if (bookInfo == null)
+	        {
+		        return NotFound("Book Information with that Id doesn't exist");
+	        }
+
+	        var book = dto.ToBook(bookInfo);
+
             _context.Books.Add(book);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetBook", new { id = book.Id }, book);
+            return CreatedAtAction("GetBook", new { id = book.Id }, book.ToBookGetDto(bookInfo.Title));
         }
 
         // DELETE: api/Books/5
