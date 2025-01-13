@@ -2,11 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using LibraryDb.Model.DTOs;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using LibraryDb.Model.Entities;
 using LibraryDb.Model.LibraryContext;
+using LibraryDb.Model.Mappers;
 
 namespace LibraryDb.Controllers
 {
@@ -21,64 +23,114 @@ namespace LibraryDb.Controllers
             _context = context;
         }
 
-        // GET: api/BookInfos
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<BookInfo>>> GetBookInfos()
-        {
-            return await _context.BookInfos.ToListAsync();
-        }
+		// GET: api/BookInfos
+		[HttpGet]
+		public async Task<ActionResult<IEnumerable<BookInfoGetDto>>> GetBookInfos()
+		{
+			var bookInfos = await _context.BookInfos
+				.Select(bi => new BookInfoGetDto
+				{
+					Title = bi.Title,
+					Description = bi.Description,
+					Rating = bi.Rating,
+					BooksInInventory = bi.Books != null ? bi.Books.Count : 0,
+					Authors = bi.BookInfoAuthors == null
+						? new List<AuthorGetDto>()
+						: bi.BookInfoAuthors.Select(bia => new AuthorGetDto
+						{
+							FirstName = bia.Author.FirstName,
+                            LastName = bia.Author.LastName
+						}).ToList()
+				})
+				.ToListAsync();
+
+			return Ok(bookInfos);
+		}
 
         // GET: api/BookInfos/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<BookInfo>> GetBookInfo(int id)
+        public async Task<ActionResult<BookInfoGetDto>> GetBookInfo(int id)
         {
-            var bookInfo = await _context.BookInfos.FindAsync(id);
+			var bookInfo = await _context.BookInfos
+				.Where(bi => bi.Id == id)
+				.Select(bi => new BookInfoGetDto
+				{
+					Title = bi.Title,
+					Description = bi.Description,
+					Rating = bi.Rating,
+					BooksInInventory = bi.Books != null ? bi.Books.Count : 0,
+					Authors = bi.BookInfoAuthors == null
+						? new List<AuthorGetDto>()
+						: bi.BookInfoAuthors.Select(bia => new AuthorGetDto
+						{
+							FirstName = bia.Author.FirstName,
+							LastName = bia.Author.LastName
+						}).ToList()
+				}).FirstOrDefaultAsync();
 
-            if (bookInfo == null)
-            {
-                return NotFound();
-            }
+			if (bookInfo == null)
+			{
+				return NotFound();
+			}
 
-            return bookInfo;
-        }
+			return Ok(bookInfo);
+		}
 
         // PUT: api/BookInfos/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutBookInfo(int id, BookInfo bookInfo)
+        public async Task<IActionResult> PutBookInfo(int id, BookInfoPutDto bookInfo)
         {
-            if (id != bookInfo.Id)
+	        var book = await _context.BookInfos.FindAsync(id);
+            if (book == null)
             {
-                return BadRequest();
+	            return NotFound();
             }
+
+            if (bookInfo.Title != null) book.Title = bookInfo.Title;
+            if (bookInfo.Description != null) book.Description = bookInfo.Description;
+            if (bookInfo.Rating.HasValue) book.Rating = bookInfo.Rating.Value;
 
             _context.Entry(bookInfo).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!BookInfoExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
+            await _context.SaveChangesAsync();
+                
             return NoContent();
         }
 
         // POST: api/BookInfos
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<BookInfo>> PostBookInfo(BookInfo bookInfo)
+        public async Task<ActionResult<BookInfo>> PostBookInfo(BookInfoPostDto dto)
         {
-            _context.BookInfos.Add(bookInfo);
+	        var bookInfo = dto.ToBook();
+	        
+	        var authors = dto.Authors?.Select(a => a.ToAuthor()).ToList() ?? new List<Author>();
+
+
+	        for (int i = 0; i < authors.Count; i++)
+			{
+				var existingAuthor = await _context.Authors
+					.FirstOrDefaultAsync(a => a.FirstName == authors[i].FirstName && a.LastName == authors[i].LastName);
+
+				if (existingAuthor != null)
+				{
+                    authors[i] = existingAuthor;
+				}
+			}
+
+
+			List<BookInfoAuthor> bookInfoAuthors = authors.Select(author => new BookInfoAuthor
+	        {
+		        BookInfo = bookInfo,
+		        Author = author
+	        }).ToList();
+
+	        var newAuthors = authors.Where(a => a.Id == 0).ToList();
+			_context.Authors.AddRange(newAuthors);
+
+			_context.BookInfos.Add(bookInfo); 
+			_context.BookInfoAuthors.AddRange(bookInfoAuthors);
+
             await _context.SaveChangesAsync();
 
             return CreatedAtAction("GetBookInfo", new { id = bookInfo.Id }, bookInfo);
@@ -99,8 +151,7 @@ namespace LibraryDb.Controllers
 
             return NoContent();
         }
-
-        private bool BookInfoExists(int id)
+		private bool BookInfoExists(int id)
         {
             return _context.BookInfos.Any(e => e.Id == id);
         }

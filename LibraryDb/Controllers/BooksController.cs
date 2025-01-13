@@ -43,10 +43,27 @@ namespace LibraryDb.Controllers
 
             return book.ToBookGetDto(book.BookInfo.Title);
         }
+        [HttpGet("search/{searchTitle}")]
+        public async Task<ActionResult<IEnumerable<BookGetDto>>> GetBookBySearchTitle(string searchTitle)
+        {
+			if (string.IsNullOrEmpty(searchTitle))
+			{
+				return NotFound();
+			}
 
-        // PUT: api/Books/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
+			var books = await _context.Books
+		        .Include(b => b.BookInfo)
+		        .Where(b => b.BookInfo.Title.ToLower().Contains(searchTitle.ToLower()))
+		        .Select(b => b.ToBookGetDto(b.BookInfo.Title))
+		        .ToListAsync();
+
+
+	        return Ok(books);
+        }
+
+		// PUT: api/Books/5
+		// To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+		[HttpPut("{id}")]
         public async Task<IActionResult> PutBook(int id, BookPutDto dto)
         {
             
@@ -71,20 +88,8 @@ namespace LibraryDb.Controllers
 				 
            
 			_context.Entry(book).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!BookExists(id))
-                {
-                    return NotFound();
-                }
-                throw;
-            }
-
+	        await _context.SaveChangesAsync();
+	        
             return NoContent();
         }
 

@@ -71,22 +71,9 @@ namespace LibraryDb.Controllers
             loan.Returned = dto.Returned;
             
 
-            _context.Entry(loan).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!LoanExists(id))
-                {
-                    return NotFound();
-                }
-                
-	            throw;
-                
-            }
+            _context.Entry(loan).State = EntityState.Modified; 
+            await _context.SaveChangesAsync();
+	        
             return NoContent();
         }
 

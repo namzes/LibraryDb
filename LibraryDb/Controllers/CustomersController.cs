@@ -85,23 +85,8 @@ namespace LibraryDb.Controllers
 
 
             _context.Entry(customer).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!CustomerExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
+	        await _context.SaveChangesAsync();
+	        
             return NoContent();
         }
 
