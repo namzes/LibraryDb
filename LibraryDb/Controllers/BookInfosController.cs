@@ -27,28 +27,34 @@ namespace LibraryDb.Controllers
 		[HttpGet]
 		public async Task<ActionResult<IEnumerable<BookInfoGetDto>>> GetBookInfos()
 		{
+			
 			var bookInfos = await _context.BookInfos
-				.Select(bi => new BookInfoGetDto
+				.Include(bi => bi.BookInfoAuthors)
+				.ThenInclude(bia => bia.Author)
+				.Select(bi => new BookInfoGetDto()
 				{
 					Title = bi.Title,
 					Description = bi.Description,
 					Rating = bi.Rating,
 					BooksInInventory = bi.Books != null ? bi.Books.Count : 0,
-					Authors = bi.BookInfoAuthors == null
-						? new List<AuthorGetDto>()
-						: bi.BookInfoAuthors.Select(bia => new AuthorGetDto
+					Authors = bi.BookInfoAuthors
+						.Select(bia => new AuthorGetDto
 						{
 							FirstName = bia.Author.FirstName,
-                            LastName = bia.Author.LastName
+							LastName = bia.Author.LastName
 						}).ToList()
+
 				})
 				.ToListAsync();
+			
+			
+
 
 			return Ok(bookInfos);
 		}
 
-        // GET: api/BookInfos/5
-        [HttpGet("{id}")]
+		// GET: api/BookInfos/5
+		[HttpGet("{id}")]
         public async Task<ActionResult<BookInfoGetDto>> GetBookInfo(int id)
         {
 			var bookInfo = await _context.BookInfos
@@ -59,9 +65,8 @@ namespace LibraryDb.Controllers
 					Description = bi.Description,
 					Rating = bi.Rating,
 					BooksInInventory = bi.Books != null ? bi.Books.Count : 0,
-					Authors = bi.BookInfoAuthors == null
-						? new List<AuthorGetDto>()
-						: bi.BookInfoAuthors.Select(bia => new AuthorGetDto
+					Authors = bi.BookInfoAuthors.
+						Select(bia => new AuthorGetDto()
 						{
 							FirstName = bia.Author.FirstName,
 							LastName = bia.Author.LastName
@@ -102,9 +107,9 @@ namespace LibraryDb.Controllers
         [HttpPost]
         public async Task<ActionResult<BookInfo>> PostBookInfo(BookInfoPostDto dto)
         {
-	        var bookInfo = dto.ToBook();
-	        
-	        var authors = dto.Authors?.Select(a => a.ToAuthor()).ToList() ?? new List<Author>();
+	        var bookInfo = dto.ToBook(new List<BookInfoAuthor>());
+
+	        var authors = dto.Authors.Select(a => a.ToAuthor(new List<BookInfoAuthor>())).ToList();
 
 
 	        for (int i = 0; i < authors.Count; i++)
@@ -124,7 +129,7 @@ namespace LibraryDb.Controllers
 		        BookInfo = bookInfo,
 		        Author = author
 	        }).ToList();
-
+			
 	        var newAuthors = authors.Where(a => a.Id == 0).ToList();
 			_context.Authors.AddRange(newAuthors);
 

@@ -5,16 +5,17 @@ namespace LibraryDb.Model.Mappers
 {
 	public static class BookInfoMapper
 	{
-		public static BookInfo ToBook(this BookInfoPostDto dto)
+		public static BookInfo ToBook(this BookInfoPostDto dto, List<BookInfoAuthor> bookInfoAuthors)
 		{
 			return new BookInfo()
 			{
 				Title = dto.Title,
 				Description = dto.Description,
 				Rating = dto.Rating,
+				BookInfoAuthors = bookInfoAuthors
 			};
 		}
-		public static BookInfoGetDto ToBookGetDto(this BookInfo bookInfo, List<AuthorGetDto> authors)
+		public static BookInfoGetDto ToBookInfoGetDto(this BookInfo bookInfo, List<AuthorGetDto> authors)
 		{
 			return new BookInfoGetDto
 			{

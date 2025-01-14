@@ -17,5 +17,20 @@ namespace LibraryDb.Model.LibraryContext
 		public DbSet<BookInfoAuthor> BookInfoAuthors { get; set; } = null!;
 		public DbSet<BookInfo> BookInfos { get; set; } = null!;
 		public DbSet<Loan> Loans { get; set; } = null!;
+
+		protected override void OnModelCreating(ModelBuilder modelBuilder)
+		{
+			modelBuilder.Entity<BookInfo>()
+				.HasMany(bi => bi.BookInfoAuthors)
+				.WithOne(bia => bia.BookInfo)
+				.HasForeignKey(bia => bia.Id)
+				.IsRequired(false);
+
+			modelBuilder.Entity<Author>()
+				.HasMany(a => a.BookInfoAuthors)
+				.WithOne(bia => bia.Author)
+				.HasForeignKey(bia => bia.Id)
+				.IsRequired(false);
+		}
 	}
 }

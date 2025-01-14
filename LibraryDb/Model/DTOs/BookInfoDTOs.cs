@@ -21,7 +21,7 @@ namespace LibraryDb.Model.DTOs
 		public required string Description { get; set; }
 		[Range(1, 10, ErrorMessage = "Rating must be 1-10")]
 		public decimal Rating { get; set; }
-		public List<AuthorPostDto>? Authors { get; set; }
+		public required List<AuthorPostDto> Authors { get; set; }
 	}
 	public class BookInfoPutDto
 	{

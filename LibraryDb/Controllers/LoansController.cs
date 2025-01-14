@@ -65,10 +65,10 @@ namespace LibraryDb.Controllers
                 return NotFound();
             }
 
-            loan.LoanDate = dto.LoanDate;
-            loan.ExpectedReturnDate = dto.ExpectedReturnDate;
-            loan.ActualReturnDate = dto.ActualReturnDate;
-            loan.Returned = dto.Returned;
+            if (dto.LoanDate.HasValue) loan.LoanDate = dto.LoanDate.Value;
+            if (dto.ExpectedReturnDate.HasValue) loan.ExpectedReturnDate = dto.ExpectedReturnDate.Value;
+            if (dto.ActualReturnDate.HasValue) loan.ActualReturnDate = dto.ActualReturnDate.Value;
+            if (dto.Returned.HasValue) loan.Returned = dto.Returned.Value;
             
 
             _context.Entry(loan).State = EntityState.Modified; 

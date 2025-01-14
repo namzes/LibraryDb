@@ -27,10 +27,10 @@ namespace LibraryDb.Model.DTOs
 
 	public class LoanPutDto
 	{
-		public DateOnly LoanDate { get; set; }
-		public DateOnly ExpectedReturnDate { get; set; }
+		public DateOnly? LoanDate { get; set; }
+		public DateOnly? ExpectedReturnDate { get; set; }
 		public DateOnly? ActualReturnDate { get; set; }
-		public bool Returned { get; set; }
+		public bool? Returned { get; set; }
 
 	}
 }

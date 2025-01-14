@@ -2,11 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using LibraryDb.Model.DTOs;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using LibraryDb.Model.Entities;
 using LibraryDb.Model.LibraryContext;
+using LibraryDb.Model.Mappers;
+using Microsoft.AspNetCore.Mvc.Formatters;
 
 namespace LibraryDb.Controllers
 {
@@ -23,65 +26,88 @@ namespace LibraryDb.Controllers
 
         // GET: api/Authors
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Author>>> GetAuthors()
+        public async Task<ActionResult<IEnumerable<AuthorGetDto>>> GetAuthors()
         {
-            return await _context.Authors.ToListAsync();
+            return await _context.Authors.Select(a=> a.ToAuthorGetDto()).ToListAsync();
         }
 
         // GET: api/Authors/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Author>> GetAuthor(int id)
+        public async Task<ActionResult<AuthorGetDto>> GetAuthor(int id)
         {
-            var author = await _context.Authors.FindAsync(id);
+			var authorDto = await _context.Authors
+				.Where(a => a.Id == id)
+				.Select(a => new AuthorGetDto
+				{
+					Id = a.Id,
+					FirstName = a.FirstName,
+					LastName = a.LastName,
+					WrittenBooks = a.BookInfoAuthors
+						.Select(bia => bia.BookInfo.Title)
+						.ToList()
+				})
+				.FirstOrDefaultAsync();
 
-            if (author == null)
+			if (authorDto == null)
             {
                 return NotFound();
             }
 
-            return author;
+            return Ok(authorDto);
         }
 
         // PUT: api/Authors/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutAuthor(int id, Author author)
+        public async Task<IActionResult> PutAuthor(int id, AuthorPutDto dto)
         {
-            if (id != author.Id)
-            {
-                return BadRequest();
-            }
+	        var author = await _context.Authors.FindAsync(id);
 
-            _context.Entry(author).State = EntityState.Modified;
+	        if (author == null)
+	        {
+                return NotFound();
+	        }
 
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!AuthorExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
+            if (dto.FirstName != null) author.FirstName = dto.FirstName;
+            if (dto.LastName != null) author.LastName = dto.LastName;
 
+	        _context.Entry(author).State = EntityState.Modified;
+
+	        await _context.SaveChangesAsync();
+	        
             return NoContent();
         }
 
         // POST: api/Authors
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Author>> PostAuthor(Author author)
+        public async Task<ActionResult<Author>> PostAuthor(AuthorPostDto dto)
         {
+	        var author = dto.ToAuthor(new List<BookInfoAuthor>());
+	        
             _context.Authors.Add(author);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetAuthor", new { id = author.Id }, author);
+            List<BookInfoAuthor> bookInfoAuthors = new List<BookInfoAuthor>();
+
+			if (dto.BookInfoIdLinks != null && dto.BookInfoIdLinks.Any())
+            {
+	            var bookInfos = await _context.BookInfos
+		            .Where(bi => dto.BookInfoIdLinks.Contains(bi.Id))
+		            .ToListAsync();
+
+				bookInfoAuthors = bookInfos.Select(bookInfo => new BookInfoAuthor
+	            {
+		            BookInfo = bookInfo,
+		            Author = author
+	            }).ToList();
+            }
+
+            _context.BookInfoAuthors.AddRange(bookInfoAuthors);
+            await _context.SaveChangesAsync();
+
+
+            return CreatedAtAction("GetAuthor", new { id = author.Id }, author.ToAuthorGetDto());
         }
 
         // DELETE: api/Authors/5
