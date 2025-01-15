@@ -14,6 +14,15 @@ namespace LibraryDb.Model.Mappers
 				BookInfoAuthors = bookInfoAuthors
 			};
 		}
+		public static Author ToAuthorWithBookInfo(this AuthorPostWithBookInfoDto dto, List<BookInfoAuthor> bookInfoAuthors)
+		{
+			return new Author()
+			{
+				FirstName = dto.FirstName,
+				LastName = dto.LastName,
+				BookInfoAuthors = bookInfoAuthors
+			};
+		}
 		public static AuthorGetDto ToAuthorGetDto(this Author author)
 		{
 			return new AuthorGetDto
@@ -23,9 +32,9 @@ namespace LibraryDb.Model.Mappers
 				LastName = author.LastName,
 			};
 		}
-		public static AuthorGetDto ToAuthorGetDtoWithBooks(this Author author, List<string>? writtenBooks)
+		public static AuthorGetWithBooksDto ToAuthorGetDtoWithBooks(this Author author, List<string>? writtenBooks)
 		{
-			return new AuthorGetDto
+			return new AuthorGetWithBooksDto
 			{
 				Id = author.Id,
 				FirstName = author.FirstName,

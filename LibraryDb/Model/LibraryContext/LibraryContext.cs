@@ -20,17 +20,10 @@ namespace LibraryDb.Model.LibraryContext
 
 		protected override void OnModelCreating(ModelBuilder modelBuilder)
 		{
-			modelBuilder.Entity<BookInfo>()
-				.HasMany(bi => bi.BookInfoAuthors)
-				.WithOne(bia => bia.BookInfo)
-				.HasForeignKey(bia => bia.Id)
-				.IsRequired(false);
-
-			modelBuilder.Entity<Author>()
-				.HasMany(a => a.BookInfoAuthors)
-				.WithOne(bia => bia.Author)
-				.HasForeignKey(bia => bia.Id)
-				.IsRequired(false);
+			modelBuilder.Entity<Book>()
+				.HasIndex(b => b.Isbn)
+				.IsUnique();
 		}
+
 	}
 }

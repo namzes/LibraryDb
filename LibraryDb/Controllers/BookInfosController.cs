@@ -109,7 +109,7 @@ namespace LibraryDb.Controllers
         {
 	        var bookInfo = dto.ToBook(new List<BookInfoAuthor>());
 
-	        var authors = dto.Authors.Select(a => a.ToAuthor(new List<BookInfoAuthor>())).ToList();
+	        var authors = dto.Authors.Select(a => a.ToAuthorWithBookInfo(new())).ToList();
 
 
 	        for (int i = 0; i < authors.Count; i++)
@@ -138,7 +138,7 @@ namespace LibraryDb.Controllers
 
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetBookInfo", new { id = bookInfo.Id }, bookInfo);
+            return CreatedAtAction("GetBookInfo", new { id = bookInfo.Id }, bookInfo.ToBookInfoGetDto(authors.Select(a=> a.ToAuthorGetDto()).ToList()));
         }
 
         // DELETE: api/BookInfos/5

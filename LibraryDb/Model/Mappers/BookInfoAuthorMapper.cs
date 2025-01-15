@@ -12,7 +12,7 @@ namespace LibraryDb.Model.Mappers
 				Id = bookInfoAuthor.Id,
 				BookInfoId = bookInfoAuthor.BookInfo.Id,
 				BookTitle = bookInfoAuthor.BookInfo.Title,
-				AuthorId = bookInfoAuthor.Id,
+				AuthorId = bookInfoAuthor.Author.Id,
 				AuthorName = bookInfoAuthor.Author.FirstName + " " + bookInfoAuthor.Author.LastName
 			};
 		}

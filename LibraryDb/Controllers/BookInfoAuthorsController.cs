@@ -27,14 +27,23 @@ namespace LibraryDb.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<BookInfoAuthorGetDto>>> GetBookInfoAuthors()
         {
-            return await _context.BookInfoAuthors.Select(bia => bia.ToBookInfoAuthorGetDto()).ToListAsync();
+            return await _context.BookInfoAuthors
+	            .Include(bia => bia.Author)
+	            .Include(bia => bia.BookInfo)
+	            .Select(bia => bia.ToBookInfoAuthorGetDto())
+	            .ToListAsync();
         }
 
         // GET: api/BookInfoAuthors/5
         [HttpGet("{id}")]
         public async Task<ActionResult<BookInfoAuthorGetDto>> GetBookInfoAuthor(int id)
         {
-            var bookInfoAuthor = await _context.BookInfoAuthors.Select(bia => bia.ToBookInfoAuthorGetDto()).FirstOrDefaultAsync(bia => bia.Id == id);
+            var bookInfoAuthor = await _context.BookInfoAuthors
+	            .Include(bia => bia.Author)
+	            .Include(bia => bia.BookInfo)
+	            .Where(bia => bia.Id == id)
+	            .Select(bia => bia.ToBookInfoAuthorGetDto())
+	            .FirstOrDefaultAsync();
 
             if (bookInfoAuthor == null)
             {
