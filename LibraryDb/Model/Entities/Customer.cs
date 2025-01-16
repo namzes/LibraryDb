@@ -16,7 +16,6 @@ namespace LibraryDb.Model.Entities
 		public required string Address { get; set; }
 		[Required]
 		public required DateOnly BirthDate { get; set; }
-		public List<BookCustomer>? BookCustomers {get; set;}
 		
 	}
 }

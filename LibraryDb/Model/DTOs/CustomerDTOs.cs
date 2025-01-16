@@ -13,8 +13,16 @@ namespace LibraryDb.Model.DTOs
 		[Column(TypeName = "varchar(200)")]
 		public required string Address { get; set; }
 		public required DateOnly BirthDate { get; set; }
+		
 	}
 
+	public class CustomerGetDto
+	{
+		public required string FirstName { get; set; }
+		public required string LastName { get; set; }
+		public required string Address { get; set; }
+		public required DateOnly BirthDate { get; set; }
+	}
 	public class CustomerPutDto
 	{
 		[Column(TypeName = "varchar(200)")]

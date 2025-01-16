@@ -68,6 +68,7 @@ namespace LibraryDb.Controllers
 					Authors = bi.BookInfoAuthors.
 						Select(bia => new AuthorGetDto()
 						{
+							Id = bia.Author.Id,
 							FirstName = bia.Author.FirstName,
 							LastName = bia.Author.LastName
 						}).ToList()

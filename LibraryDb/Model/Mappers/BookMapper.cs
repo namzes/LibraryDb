@@ -12,7 +12,8 @@ namespace LibraryDb.Model.Mappers
 				Isbn = dto.Isbn,
 				Edition = dto.Edition,
 				ReleaseYear = dto.ReleaseYear,
-				BookInfo = bookInfo
+				BookInfo = bookInfo,
+				BookLoanCards = new()
 			};
 		}
 		public static BookGetDto ToBookGetDto(this Book book, string bookTitle)

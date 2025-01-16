@@ -7,13 +7,16 @@ namespace LibraryDb.Model.Mappers
 	{
 		public static LoanGetDto ToLoanGetDto(this Loan loan)
 		{
+			
+
 			return new LoanGetDto()
 			{
 				LoanId = loan.Id,
-				BookId = loan.BookCustomer?.Book.Id ?? 0,
-				BookTitle = loan.BookCustomer?.Book?.BookInfo?.Title ?? "Unknown",
-				CustomerId = loan.BookCustomer?.Customer.Id ?? 0,
-				CustomerName = $"{loan.BookCustomer?.Customer?.FirstName ?? "Unknown"} {loan.BookCustomer?.Customer?.LastName ?? "Unknown"}",
+				BookId = loan.BookLoanCard.Book.Id,
+				BookTitle = loan.BookLoanCard.Book.BookInfo.Title,
+				LoanCardNumber = loan.BookLoanCard.LoanCard.LoanCardNumber,
+				CustomerId = loan.BookLoanCard.LoanCard.Customer.Id,
+				CustomerName = $"{loan.BookLoanCard.LoanCard.Customer.FirstName} {loan.BookLoanCard.LoanCard.Customer.LastName}",
 				LoanDate = loan.LoanDate,
 				ExpectedReturnDate = loan.ExpectedReturnDate,
 				IsLate = loan.IsLate,

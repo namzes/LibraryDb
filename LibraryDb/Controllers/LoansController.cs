@@ -27,11 +27,13 @@ namespace LibraryDb.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<LoanGetDto>>> GetLoans()
         {
-	        var loans = await _context.Loans.Include(l => l.BookCustomer).
-		        ThenInclude(bc => bc.Book).
-		        ThenInclude(b => b.BookInfo).
-		        Include(l => l.BookCustomer!.Customer).
-		        ToListAsync();
+	        var loans = await _context.Loans
+		        .Include(l => l.BookLoanCard)
+		        .ThenInclude(blc => blc.Book)
+		        .ThenInclude(b => b.BookInfo)
+		        .Include(l => l.BookLoanCard.LoanCard)
+		        .ThenInclude(lc => lc.Customer)
+		        .ToListAsync();
 
 
             var loanDtos = _context.Loans.Select(loan => loan.ToLoanGetDto()).ToList();
@@ -43,9 +45,15 @@ namespace LibraryDb.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<LoanGetDto>> GetLoan(int id)
         {
-            var loan = await _context.Loans.FindAsync(id);
+	        var loan = await _context.Loans.Include(l => l.BookLoanCard)
+		        .ThenInclude(blc => blc.Book)
+		        .ThenInclude(b => b.BookInfo)
+		        .Include(l => l.BookLoanCard.LoanCard)
+		        .ThenInclude(lc => lc.Customer)
+		        .FirstOrDefaultAsync(l => l.Id == id);
 
-            if (loan == null)
+
+			if (loan == null)
             {
                 return NotFound();
             }
@@ -82,7 +90,7 @@ namespace LibraryDb.Controllers
         [HttpPost]
         public async Task<ActionResult<LoanGetDto>> PostLoan(LoanPostDto loanDto)
         {
-	        var book = await _context.Books.FindAsync(loanDto.BookId);
+	        var book = await _context.Books.Include(b => b.BookInfo).FirstOrDefaultAsync(b => b.Id ==loanDto.BookId);
 
 	        if (book == null)
 	        {
@@ -91,19 +99,20 @@ namespace LibraryDb.Controllers
 
 			if (!book.IsAvailable)
 	        {
-		        return Conflict(new { Message = "The book is currently not available for loan." });
-	        }
+				return Conflict(new { message = "Book is currently not available for loan." });
+			}
 
-			var customer = await _context.Customers.FindAsync(loanDto.CustomerId);
+			var loanCard = await _context.LoanCards.Include(lc => lc.Customer).FirstOrDefaultAsync(lc => lc.Id ==loanDto.LoanCardId);
 
-	        if (customer == null)
+	        if (loanCard == null)
 	        {
 		        return NotFound();
 	        }
+
 	        book.IsAvailable = false;
-	        var bc = new BookCustomer()
+	        var bc = new BookLoanCard()
 	        {
-		        Customer = customer,
+		        LoanCard = loanCard,
 		        Book = book
 	        };
 
@@ -113,7 +122,7 @@ namespace LibraryDb.Controllers
             {
 	            LoanDate = DateOnly.FromDateTime(DateTime.UtcNow),
 				ExpectedReturnDate = DateOnly.FromDateTime(DateTime.UtcNow).AddDays(10),
-				BookCustomer = bc
+				BookLoanCard = bc
 			};
             
 
@@ -128,27 +137,29 @@ namespace LibraryDb.Controllers
         public async Task<IActionResult> ReturnLoan(int id)
         {
 	        var loan = await _context.Loans
-		        .Include(l => l.BookCustomer)
-		        .ThenInclude(bc => bc.Book)
+		        .Include(l => l.BookLoanCard)
+		        .ThenInclude(bcl => bcl.Book)
+		        .Include(l => l.BookLoanCard)
+		        .ThenInclude(bcl => bcl.LoanCard)
 		        .FirstOrDefaultAsync(l => l.Id == id);
 	        if (loan == null)
 	        {
 		        return NotFound();
 	        }
-			if (loan.BookCustomer.Book.IsAvailable)
+			if (loan.BookLoanCard.Book.IsAvailable)
 	        {
 		        return Conflict(new { Message = "The book is already available and can not be returned" });
 			}
 	        
 
             loan.Returned = true;
-            loan.BookCustomer.Book.IsAvailable = true;
+            loan.BookLoanCard.Book.IsAvailable = true;
             loan.ActualReturnDate = DateOnly.FromDateTime(DateTime.UtcNow);
             loan.IsLate = loan.Returned && loan.ActualReturnDate.HasValue &&
                           loan.ActualReturnDate > loan.ExpectedReturnDate;
 
             _context.Loans.Entry(loan).State = EntityState.Modified;
-            _context.Books.Entry(loan.BookCustomer.Book).State = EntityState.Modified;
+            _context.Books.Entry(loan.BookLoanCard.Book).State = EntityState.Modified;
 
 			await _context.SaveChangesAsync();
 
@@ -159,13 +170,16 @@ namespace LibraryDb.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteLoan(int id)
         {
-            var loan = await _context.Loans.FindAsync(id);
+            var loan = await _context.Loans.Include(l => l.BookLoanCard)
+	            .ThenInclude(blc => blc.Book).FirstOrDefaultAsync(l => l.Id == id);
             if (loan == null)
             {
                 return NotFound();
             }
 
-            _context.Loans.Remove(loan);
+            loan.BookLoanCard.Book.IsAvailable = true;
+
+			_context.Loans.Remove(loan);
             await _context.SaveChangesAsync();
 
             return NoContent();

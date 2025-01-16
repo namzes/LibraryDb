@@ -25,40 +25,52 @@ namespace LibraryDb.Controllers
 
         // GET: api/Customers
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<CustomerDto>>> GetCustomers()
+        public async Task<ActionResult<IEnumerable<CustomerGetDto>>> GetCustomers()
         {
-            return await _context.Customers.Select(c => c.ToCustomerDto()).ToListAsync();
+            return await _context.Customers.Select(c => c.ToCustomerGetDto()).ToListAsync();
         }
 
         // GET: api/Customers/5
         [HttpGet("{id}")]
         public async Task<ActionResult<CustomerDto>> GetCustomer(int id)
         {
-            var customer = await _context.Customers.FindAsync(id);
-
-            if (customer == null)
+            var loanCard = await _context.LoanCards
+	            .Include(lc => lc.Customer)
+	            .Where(lc => lc.Customer.Id == id)
+	            .FirstOrDefaultAsync();
+            
+            if (loanCard == null)
             {
                 return NotFound();
             }
 
-            return customer.ToCustomerDto();
+            var customer = loanCard.Customer;
+
+			return customer.ToCustomerDto(loanCard.ToLoanCardGetDto());
         }
         [HttpGet("{id}/loans")]
         public async Task<ActionResult<CustomerGetLoanDto>> GetCustomerLoans(int id)
         {
-	        var customer = await _context.Customers.FindAsync(id);
-	        if (customer == null)
+			var loanCard = await _context.LoanCards
+				.Include(lc => lc.Customer)
+				.FirstOrDefaultAsync(lc => lc.Customer.Id == id);
+
+			if (loanCard == null)
 	        {
 		        return NotFound();
 	        }
 
-	        var loanData = await _context.Loans.Include(l => l.BookCustomer)
+	        var customer = loanCard.Customer;
+
+	        
+	        var loanData = await _context.Loans.Include(l => l.BookLoanCard)
 		        .ThenInclude(bc => bc.Book)
 		        .ThenInclude(b => b.BookInfo)
-		        .Where(l => l.BookCustomer.Customer.Id == customer.Id)
+		       
+		        .Where(l => l.BookLoanCard.LoanCard.Id == loanCard.Id)
 		        .Select(l => new BookLoanDate
 		        {
-			        BookTitle = l.BookCustomer.Book.BookInfo.Title,
+			        BookTitle = l.BookLoanCard.Book.BookInfo.Title,
 			        LoanDate = l.LoanDate
 		        })
 		        .ToListAsync();
@@ -96,10 +108,17 @@ namespace LibraryDb.Controllers
         public async Task<ActionResult<CustomerDto>> PostCustomer(CustomerDto dto)
         {
 	        var customer = dto.ToCustomer();
-            _context.Customers.Add(customer);
+	        var loanCard = new LoanCard
+	        {
+		        LoanCardNumber = await LoanCardUtils.GenerateUniqueLoanCardNumber(_context),
+		        Customer = customer,
+                BookLoanCard = new()
+	        };
+	        _context.Customers.Add(customer);
+            _context.LoanCards.Add(loanCard);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetCustomer", new { id = customer.Id }, customer.ToCustomerDto());
+            return CreatedAtAction("GetCustomer", new { id = customer.Id }, customer.ToCustomerDto(loanCard.ToLoanCardGetDto()));
         }
 
         // DELETE: api/Customers/5

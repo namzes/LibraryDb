@@ -14,17 +14,30 @@ namespace LibraryDb.Model.Mappers
 				FirstName = dto.FirstName,
 				LastName = dto.LastName,
 				Address = dto.Address,
-				BirthDate = dto.BirthDate
+				BirthDate = dto.BirthDate,
 			};
 		}
-		public static CustomerDto ToCustomerDto(this Customer customer)
+		public static CustomerDto ToCustomerDto(this Customer customer, LoanCardGetDto loanCard)
 		{
+			
 			return new CustomerDto
 			{
 				FirstName = customer.FirstName,
 				LastName = customer.LastName,
 				Address = customer.Address,
-				BirthDate = customer.BirthDate
+				BirthDate = customer.BirthDate,
+				
+			};
+		}
+
+		public static CustomerGetDto ToCustomerGetDto(this Customer customer)
+		{
+			return new CustomerGetDto
+			{
+				FirstName = customer.FirstName,
+				LastName = customer.LastName,
+				Address = customer.Address,
+				BirthDate = customer.BirthDate,
 			};
 		}
 		public static CustomerGetLoanDto ToCustomerGetLoanDto(this Customer customer, List<BookLoanDate>? bookLoanDates)

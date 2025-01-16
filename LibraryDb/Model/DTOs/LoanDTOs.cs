@@ -7,6 +7,7 @@ namespace LibraryDb.Model.DTOs
 		public int LoanId { get; set; }
 		public int BookId { get; set; }
 		public string? BookTitle { get; set; }
+		public int LoanCardNumber { get; set; }
 		public int CustomerId { get; set; }
 		public string? CustomerName { get; set; }
 		public DateOnly LoanDate { get; set; }
@@ -14,6 +15,7 @@ namespace LibraryDb.Model.DTOs
 		public DateOnly? ActualReturnDate { get; set; }
 		public bool IsLate { get; set; }
 		public bool Returned { get; set; }
+
 	}
 	
 
@@ -22,7 +24,7 @@ namespace LibraryDb.Model.DTOs
 		[Required]
 		public int BookId { get; set; }
 		[Required]
-		public int CustomerId { get; set; }
+		public int LoanCardId { get; set; }
 	}
 
 	public class LoanPutDto
