@@ -16,6 +16,6 @@ namespace LibraryDb.Model.Entities
 		public bool IsAvailable { get; set; } = true;
 		[Required]
 		public required BookInfo BookInfo { get; set; }
-		public required List<BookLoanCard>? BookLoanCards { get; set; }
+		public required List<BookLoanCard> BookLoanCards { get; set; }
 	}
 }

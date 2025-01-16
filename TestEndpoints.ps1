@@ -2,7 +2,7 @@ param(
     [string] $baseUrl = "https://localhost:7086"
 )
 
-##### Book Information
+##### Post BookInfo ############################################################################
 
 $apiUrl = "$baseUrl/api/BookInfos"
 
@@ -77,7 +77,7 @@ $books | ForEach-Object {
     $response
 } | Format-Table -Property Title, Description, Rating, BooksInInventory, @{Name="Authors"; Expression={($_.Authors | ForEach-Object { "$($_.FirstName) $($_.LastName)" }) -join ", "}}
 
-##### Authors ################################################################################################ 
+##### Post Authors ################################################################################################ 
 
 $authorApiUrl = "$baseUrl/api/Authors"
 
@@ -108,7 +108,7 @@ foreach ($author in $authors) {
     }
 }
 
-###### Book Inventory
+###### Post Books #######################################################################################
 
 $apiUrl = "$baseUrl/api/Books"
 
@@ -119,31 +119,31 @@ $physicalBooks = @(
         Isbn = "978-3-16-148410-0"
         Edition = 1
         ReleaseYear = 1997
-        BookInfoId = 1  # Referencing Book #1
+        BookInfoId = 1 
     },
     @{
         Isbn = "978-1-56619-909-4"
         Edition = 2
         ReleaseYear = 1945
-        BookInfoId = 2  # Referencing Book #2
+        BookInfoId = 2  
     },
     @{
         Isbn = "978-0-7432-7356-5"
         Edition = 3
         ReleaseYear = 1949
-        BookInfoId = 3  # Referencing Book #3
+        BookInfoId = 3  
     },
     @{
         Isbn = "978-0-7432-7356-6"
         Edition = 4
         ReleaseYear = 1960
-        BookInfoId = 4  # Referencing Book #4
+        BookInfoId = 4  
     },
     @{
         Isbn = "978-1-56619-909-5"
         Edition = 5
         ReleaseYear = 1813
-        BookInfoId = 5  # Referencing Book #5
+        BookInfoId = 5  
     }
 )
 
@@ -156,7 +156,7 @@ foreach ($physicalBook in $physicalBooks) {
 }
 
 
-####### Customers ##################################################################################
+####### Post Customers ##################################################################################
 
 $customerApiUrl = "$baseUrl/api/Customers"
 
@@ -191,7 +191,7 @@ foreach ($customer in $customers) {
     $customerResponse | Format-Table -Property FirstName, LastName, Address, BirthDate
 }
 
-##### Loans ##################################################################################
+##### Post Loans ##################################################################################
 
 $loanApiUrl = "$baseUrl/api/Loans" 
 
@@ -225,9 +225,9 @@ foreach ($loan in $loans) {
         $loanResponse | Format-Table -Property LoanId, BookId, bookTitle, CustomerId, CustomerName, LoanDate, expectedReturnDate, IsLate, Returned
     }
     catch {
-        Write-Host "Error posting loan: $($loan.BookId) - LoanCardId $($loan.LoanCardId)"
-        
-        
+        Write-Host "Error posting loan: $($loan.BookId) - LoanCardId $($loan.LoanCardId)" 
+        ################
+        ################ Hjälp Benjamin
         if ($_.Exception -is [System.Net.Http.HttpRequestException]) {
             
             $responseContent = $_.Exception.Message

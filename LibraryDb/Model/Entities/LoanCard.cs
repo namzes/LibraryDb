@@ -8,7 +8,7 @@ namespace LibraryDb.Model.Entities
 		public int Id { get; set; }
 		public required int LoanCardNumber { get; set; }
 		public required Customer Customer { get; set; }
-		public required List<BookLoanCard>? BookLoanCard { get; set; }
+		public required List<BookLoanCard> BookLoanCard { get; set; }
 
 		
 	}
