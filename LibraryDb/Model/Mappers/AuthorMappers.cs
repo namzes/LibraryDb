@@ -1,5 +1,6 @@
 ﻿using LibraryDb.Model.DTOs;
 using LibraryDb.Model.Entities;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace LibraryDb.Model.Mappers
 {
@@ -23,6 +24,10 @@ namespace LibraryDb.Model.Mappers
 				BookInfoAuthors = bookInfoAuthors
 			};
 		}
+		public static List<Author> ToAuthors(this List<AuthorPostWithBookInfoDto> dtoAuthorPostWithBookInfo)
+		{
+			return dtoAuthorPostWithBookInfo.Select(a => a.ToAuthorWithBookInfo(new())).ToList();
+		}
 		public static AuthorGetDto ToAuthorGetDto(this Author author)
 		{
 			return new AuthorGetDto
@@ -42,5 +47,13 @@ namespace LibraryDb.Model.Mappers
 				WrittenBooks = writtenBooks ?? new()
 			};
 		}
+
+		public static Author? GetAuthorByName(this IQueryable<Author> authors, string firstName, string lastName)
+		{
+			return authors.FirstOrDefault(a => a.FirstName == firstName && a.LastName == lastName);
+		}
+
+		
+
 	}
 }

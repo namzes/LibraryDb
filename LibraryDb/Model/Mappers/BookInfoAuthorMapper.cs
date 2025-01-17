@@ -16,5 +16,13 @@ namespace LibraryDb.Model.Mappers
 				AuthorName = bookInfoAuthor.Author.FirstName + " " + bookInfoAuthor.Author.LastName
 			};
 		}
+		public static List<BookInfoAuthor> ToBookInfoAuthors(this List<Author> authors, BookInfo bookInfo)
+		{
+			return authors.Select(author => new BookInfoAuthor
+			{
+				BookInfo = bookInfo,
+				Author = author
+			}).ToList();
+		}
 	}
 }

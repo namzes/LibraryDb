@@ -19,6 +19,7 @@ namespace LibraryDb.Model.Mappers
 				CustomerName = $"{loan.BookLoanCard.LoanCard.Customer.FirstName} {loan.BookLoanCard.LoanCard.Customer.LastName}",
 				LoanDate = loan.LoanDate,
 				ExpectedReturnDate = loan.ExpectedReturnDate,
+				ActualReturnDate = loan.ActualReturnDate,
 				IsLate = loan.IsLate,
 				Returned = loan.Returned
 			};

@@ -139,8 +139,10 @@ namespace LibraryDb.Controllers
 	        var loan = await _context.Loans
 		        .Include(l => l.BookLoanCard)
 		        .ThenInclude(bcl => bcl.Book)
+		        .ThenInclude(b => b.BookInfo)
 		        .Include(l => l.BookLoanCard)
 		        .ThenInclude(bcl => bcl.LoanCard)
+		        .ThenInclude(lc => lc.Customer)
 		        .FirstOrDefaultAsync(l => l.Id == id);
 	        if (loan == null)
 	        {
@@ -183,11 +185,6 @@ namespace LibraryDb.Controllers
             await _context.SaveChangesAsync();
 
             return NoContent();
-        }
-
-        private bool LoanExists(int id)
-        {
-            return _context.Loans.Any(e => e.Id == id);
         }
     }
 }

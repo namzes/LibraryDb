@@ -77,6 +77,16 @@ $books | ForEach-Object {
     $response
 } | Format-Table -Property Title, Description, Rating, BooksInInventory, @{Name="Authors"; Expression={($_.Authors | ForEach-Object { "$($_.FirstName) $($_.LastName)" }) -join ", "}}
 
+##### Get BookInfos ##########################################################################################
+
+Write-Host "Getting BookInfos"
+Invoke-RestMethod -Uri $apiUrl -Method Get | Format-Table -Property Title, Description, Rating, BooksInInventory, @{Name="Authors"; Expression={($_.Authors | ForEach-Object { "$($_.FirstName) $($_.LastName)" }) -join ", "}}
+
+##### Get Book #############################################################################################
+
+Write-Host "Get BookInfo"
+Invoke-RestMethod -Uri "$apiUrl/1" -Method Get | Format-Table -Property Title, Description, Rating, BooksInInventory, @{Name="Authors"; Expression={($_.Authors | ForEach-Object { "$($_.FirstName) $($_.LastName)" }) -join ", "}}
+
 ##### Post Authors ################################################################################################ 
 
 $authorApiUrl = "$baseUrl/api/Authors"
@@ -104,7 +114,7 @@ foreach ($author in $authors) {
     }
     catch {
         Write-Host "Error posting author: $($author.FirstName) $($author.LastName)"
-        Write-Host "Error message: $($_.Exception.Message)"
+        Write-Host "Error message: $($_.Exception.Message) Author already exists."
     }
 }
 
@@ -219,30 +229,27 @@ $loans = @(
 foreach ($loan in $loans) {
     try {
         $loanJsonData = $loan | ConvertTo-Json -Depth 3
-        $loanResponse = Invoke-RestMethod -Uri $loanApiUrl -Method Post -Body $loanJsonData -ContentType "application/json" -ErrorAction Stop
+        $loanResponse = Invoke-RestMethod -Uri $loanApiUrl -Method Post -Body $loanJsonData -ContentType "application/json"
 
         Write-Host "Loan created successfully: BookId $($loan.BookId) - LoanCardId $($loan.LoanCardId)"
         $loanResponse | Format-Table -Property LoanId, BookId, bookTitle, CustomerId, CustomerName, LoanDate, expectedReturnDate, IsLate, Returned
     }
     catch {
         Write-Host "Error posting loan: $($loan.BookId) - LoanCardId $($loan.LoanCardId)" 
-        ################
-        ################ Hjälp Benjamin
-        if ($_.Exception -is [System.Net.Http.HttpRequestException]) {
-            
-            $responseContent = $_.Exception.Message
-            Write-Host "Error message: $responseContent"
-        }
-        else {
-            Write-Host "General error message: $($_.Exception.Message)"
-        }
+        Write-Host "Error message: $($_.Exception.Message) Unable to loan book that is already loaned."
     }
 }
 
+###### Return Loans ################################################################################
 
-
-
-
+Write-Host "Getting BookInfos"
+$returnApiUrl = "$baseUrl/api/Loans/return" 
+$returnResponse | Invoke-RestMethod -Uri "$returnApiUrl/1" -Method Patch
+Write-Host $returnResponse
+$returnResponse | Invoke-RestMethod -Uri "$returnApiUrl/2" -Method Patch
+Write-Host $returnResponse
+$returnResponse | Invoke-RestMethod -Uri "$returnApiUrl/3" -Method Patch 
+Write-Host $returnResponse
 
 
 

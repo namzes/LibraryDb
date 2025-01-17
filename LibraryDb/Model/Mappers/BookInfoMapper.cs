@@ -15,6 +15,11 @@ namespace LibraryDb.Model.Mappers
 				BookInfoAuthors = bookInfoAuthors
 			};
 		}
+		public static BookInfo ToBook(this BookInfoPostDto dto)
+		{
+			return dto.ToBook(new List<BookInfoAuthor>());
+		}
+
 		public static BookInfoGetDto ToBookInfoGetDto(this BookInfo bookInfo, List<AuthorGetDto> authors)
 		{
 			return new BookInfoGetDto

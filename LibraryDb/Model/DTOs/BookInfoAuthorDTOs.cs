@@ -11,10 +11,4 @@ namespace LibraryDb.Model.DTOs
 		public required string AuthorName { get; set; }
 		
 	}
-
-	public class BookInfoAuthorPutDto
-	{
-		public int BookInfoId { get; set; }
-		public int AuthorId { get; set; }
-	}
 }

@@ -37,16 +37,11 @@ namespace LibraryDb.Controllers
         {
 			var authorDto = await _context.Authors
 				.Where(a => a.Id == id)
-				.Select(a => new AuthorGetWithBooksDto
-				{
-					Id = a.Id,
-					FirstName = a.FirstName,
-					LastName = a.LastName,
-					WrittenBooks = a.BookInfoAuthors
-						.Select(bia => bia.BookInfo.Title)
-						.ToList()
-				})
+				.Select(a => a.ToAuthorGetDtoWithBooks(a.BookInfoAuthors
+					.Select(bia => bia.BookInfo.Title)
+					.ToList()))
 				.FirstOrDefaultAsync();
+
 
 			if (authorDto == null)
             {

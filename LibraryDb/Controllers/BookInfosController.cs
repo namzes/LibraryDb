@@ -106,30 +106,24 @@ namespace LibraryDb.Controllers
         // POST: api/BookInfos
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<BookInfo>> PostBookInfo(BookInfoPostDto dto)
+        public async Task<ActionResult<BookInfo>> PostBookInfo(BookInfoPostDto dtoBookInfoPost)
         {
-	        var bookInfo = dto.ToBook(new List<BookInfoAuthor>());
+	        var bookInfo = dtoBookInfoPost.ToBook();
 
-	        var authors = dto.Authors.Select(a => a.ToAuthorWithBookInfo(new())).ToList();
-
+	        var authors = dtoBookInfoPost.Authors.ToAuthors();
 
 	        for (int i = 0; i < authors.Count; i++)
-			{
-				var existingAuthor = await _context.Authors
-					.FirstOrDefaultAsync(a => a.FirstName == authors[i].FirstName && a.LastName == authors[i].LastName);
-
-				if (existingAuthor != null)
-				{
-                    authors[i] = existingAuthor;
-				}
-			}
-
-
-			List<BookInfoAuthor> bookInfoAuthors = authors.Select(author => new BookInfoAuthor
 	        {
-		        BookInfo = bookInfo,
-		        Author = author
-	        }).ToList();
+		        var existingAuthor = await _context.Authors
+			        .FirstOrDefaultAsync(a => a.FirstName == authors[i].FirstName && a.LastName == authors[i].LastName);
+
+		        if (existingAuthor != null)
+		        {
+			        authors[i] = existingAuthor;
+		        }
+	        }
+
+	        List<BookInfoAuthor> bookInfoAuthors = authors.ToBookInfoAuthors(bookInfo);
 			
 	        var newAuthors = authors.Where(a => a.Id == 0).ToList();
 			_context.Authors.AddRange(newAuthors);
@@ -141,6 +135,9 @@ namespace LibraryDb.Controllers
 
             return CreatedAtAction("GetBookInfo", new { id = bookInfo.Id }, bookInfo.ToBookInfoGetDto(authors.Select(a=> a.ToAuthorGetDto()).ToList()));
         }
+
+        
+
 
         // DELETE: api/BookInfos/5
         [HttpDelete("{id}")]

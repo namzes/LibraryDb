@@ -46,10 +46,5 @@ namespace LibraryDb.Controllers
 
             return loanCard.ToLoanCardWithCustomerDto();
         }
-
-        private bool LoanCardExists(int id)
-        {
-            return _context.LoanCards.Any(e => e.Id == id);
-        }
     }
 }
