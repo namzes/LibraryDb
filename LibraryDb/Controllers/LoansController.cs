@@ -109,23 +109,35 @@ namespace LibraryDb.Controllers
 		        return NotFound();
 	        }
 
-	        book.IsAvailable = false;
-	        var bc = new BookLoanCard()
-	        {
-		        LoanCard = loanCard,
-		        Book = book
-	        };
+	        var existingBookLoanCard = await
+		        _context.BookLoanCards.FirstOrDefaultAsync(blc =>
+			        blc.Book.Id == book.Id && blc.LoanCard.Id == loanCard.Id);
 
-            _context.BooksCustomers.Add(bc); 
+	        BookLoanCard blc;
+
+	        if (existingBookLoanCard != null)
+	        {
+		        blc = existingBookLoanCard;
+			}
+	        else
+	        {
+		        blc = new BookLoanCard()
+		        {
+			        LoanCard = loanCard,
+			        Book = book
+		        };
+		        _context.BookLoanCards.Add(blc);
+			}
+
+	        book.IsAvailable = false;
 
             var loan = new Loan()
             {
 	            LoanDate = DateOnly.FromDateTime(DateTime.UtcNow),
 				ExpectedReturnDate = DateOnly.FromDateTime(DateTime.UtcNow).AddDays(10),
-				BookLoanCard = bc
+				BookLoanCard = blc
 			};
             
-
             _context.Loans.Add(loan);
             await _context.SaveChangesAsync();
 

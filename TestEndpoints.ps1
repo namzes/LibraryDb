@@ -1,6 +1,85 @@
+# This script is used to test the endpoints
 param(
+    [string]$environment = "Development",
+    [string]$launchProfile = "https-Development",
+    [string]$connectionStringKey = "BooksDb",
+    [bool]$dropDatabase = $false,
+    [bool]$createDatabase = $false,
     [string] $baseUrl = "https://localhost:7086"
 )
+
+$projectName = Get-ChildItem -Recurse -Filter "*.csproj" | Select-Object -First 1 | ForEach-Object { $_.Directory.Name }
+
+# Get the base URL of the project
+$launchSettings = Get-Content -LiteralPath ".\$projectName\Properties\launchSettings.json" | ConvertFrom-Json
+$baseUrl = ($launchSettings.profiles.$launchProfile.applicationUrl -split ";")[0] # Can also set manually -> $baseUrl = "https://localhost:7253"
+
+#Install module SqlServer
+if (-not (Get-Module -ErrorAction Ignore -ListAvailable SqlServer)) {
+    Write-Verbose "Installing SqlServer module for the current user..."
+    Install-Module -Scope CurrentUser SqlServer -ErrorAction Stop
+}
+Import-Module SqlServer
+
+# Set the environment variable
+$env:ASPNETCORE_ENVIRONMENT = $environment
+
+
+
+# Read the connection string from appsettings.Development.json
+$appSettings = Get-Content ".\$projectName\appsettings.$environment.json" | ConvertFrom-Json
+$connectionString = $appSettings.ConnectionStrings.$connectionStringKey
+Write-Host "Database Connection String: $connectionString" -ForegroundColor Blue
+
+
+# Get the database name from the connection string
+if ($connectionString -match "Database=(?<dbName>[^;]+)")
+{
+    $databaseName = $matches['dbName']
+    Write-Host "Database Name: $databaseName" -ForegroundColor Blue
+}else{
+    Write-Host "Database Name not found in connection string" -ForegroundColor Red
+    exit
+}
+
+
+# Check if the database exists
+$conStringDbExcluded = $connectionString -replace "Database=[^;]+;", ""
+$queryDbExists = Invoke-Sqlcmd -ConnectionString $conStringDbExcluded -Query "Select name FROM sys.databases WHERE name='$databaseName'"
+if($queryDbExists){
+    if($dropDatabase -or (Read-Host "Do you want to drop the database? (y/n)").ToLower() -eq "y") { 
+
+        # Drop the database
+        Invoke-Sqlcmd -ConnectionString $connectionString -Query  "USE master;ALTER DATABASE $databaseName SET SINGLE_USER WITH ROLLBACK IMMEDIATE;DROP DATABASE $databaseName;"
+        Write-Host "Database $databaseName dropped." -ForegroundColor Green
+    }
+}
+
+# Create the database from the model
+if(Select-String -LiteralPath ".\$projectName\Program.cs" -Pattern "EnsureCreated()"){
+    Write-Host "The project uses EnsureCreated() to create the database from the model." -ForegroundColor Yellow
+} else {
+    if($createDatabase -or (Read-Host "Should dotnet ef migrate and update the database? (y/n)").ToLower() -eq "y") { 
+
+        dotnet ef migrations add "UpdateModelFromScript_$(Get-Date -Format "yyyyMMdd_HHmmss")" --project ".\$projectName\$projectName.csproj"
+        dotnet ef database update --project ".\$projectName\$projectName.csproj"
+    }
+}
+
+# Run the application
+if((Read-Host "Start the server from Visual studio? (y/n)").ToLower() -ne "y") { 
+    Start-Process -FilePath "dotnet" -ArgumentList "run --launch-profile $launchProfile --project .\$projectName\$projectName.csproj" -WindowStyle Normal    
+    Write-Host "Wait for the server to start..." -ForegroundColor Yellow 
+}
+
+# Continue with the rest of the script
+Read-Host "Press Enter to continue when the server is started..."
+
+
+
+### =============================================================
+### =============================================================
+### =============================================================
 
 ##### Post BookInfo ############################################################################
 
@@ -120,7 +199,7 @@ foreach ($author in $authors) {
 
 ###### Post Books #######################################################################################
 
-$apiUrl = "$baseUrl/api/Books"
+$apiBookUrl = "$baseUrl/api/Books"
 
 Write-Host "Posting Books"
 
@@ -159,7 +238,7 @@ $physicalBooks = @(
 
 foreach ($physicalBook in $physicalBooks) {
     $physicalBookJsonData = $physicalBook | ConvertTo-Json -Depth 3
-    $physicalBookResponse = Invoke-RestMethod -Uri $apiUrl -Method Post -Body $physicalBookJsonData -ContentType "application/json"
+    $physicalBookResponse = Invoke-RestMethod -Uri $apiBookUrl -Method Post -Body $physicalBookJsonData -ContentType "application/json"
 
     Write-Host "Physical copy posted successfully for BookInfo ID: $($physicalBook.BookInfoId)"
     $physicalBookResponse | Format-Table -Property Isbn, Edition, ReleaseYear, BookInfoId
@@ -244,15 +323,102 @@ foreach ($loan in $loans) {
 
 Write-Host "Getting BookInfos"
 $returnApiUrl = "$baseUrl/api/Loans/return" 
-$returnResponse | Invoke-RestMethod -Uri "$returnApiUrl/1" -Method Patch
-Write-Host $returnResponse
-$returnResponse | Invoke-RestMethod -Uri "$returnApiUrl/2" -Method Patch
-Write-Host $returnResponse
-$returnResponse | Invoke-RestMethod -Uri "$returnApiUrl/3" -Method Patch 
-Write-Host $returnResponse
+for ($i = 1; $i -lt 4; $i++){
+    $loanResponse = Invoke-RestMethod -Uri "$returnApiUrl/$i" -Method Patch
+    Write-Host "Loan returned successfully. LoanId: $i"
+    $loanResponse | Format-Table -Property LoanId, BookId, bookTitle, CustomerId, CustomerName, LoanDate, expectedReturnDate, IsLate, Returned
+
+}
+
+###### Delete Customers ##################################################################################
+
+Write-Host "Deleting Customers"
+for ($i = 1; $i -le 3; $i++) {
+    try {
+        Invoke-RestMethod -Uri "$customerApiUrl/$i" -Method Delete
+        Write-Host "Customer with ID $i deleted successfully."
+    } catch {
+        Write-Host "Failed to delete Customer with ID $i. Error: $($_.Exception.Message)" -ForegroundColor Red
+    }
+}
+
+#############
+Write-Host "Verifying LoanCards cascading delete"
+$loanCardResponse = Invoke-RestMethod -Uri "$baseUrl/api/LoanCards" -Method Get
+if ($null -eq $loanCardResponse-or $loanCardResponse.Count -eq 0) {
+    Write-Host "No books found in the database."
+} else {
+    $loanCardResponse | Format-Table -Property Id, LoanCardNumber, Customer
+}
+#############
+Write-Host "Verifying BookLoanCards cascading delete"
+$bookLoanCardResponse = Invoke-RestMethod -Uri "$baseUrl/api/BookLoanCards" -Method Get
+if ($null -eq $bookLoanCardResponse -or $bookLoanCardResponse.Count -eq 0) {
+    Write-Host "No books found in the database."
+} else {
+    $bookLoanCardResponse | Format-Table -Property BookId, LoanCardId
+}
 
 
+######## Delete books ###########################################################################
 
+Write-Host "Deleting BookInfos"
+for ($i = 1; $i -le 5; $i++) {
+    try {
+        Invoke-RestMethod -Uri "$apiUrl/$i" -Method Delete
+        Write-Host "BookInfo with ID $i deleted successfully."
+    } catch {
+        Write-Host "Failed to delete Book with ID $i. Error: $($_.Exception.Message)" -ForegroundColor Red
+    }
+}
+
+Write-Host "Verifying Books cascading delete"
+$bookResponse = Invoke-RestMethod -Uri "$baseUrl/api/Books" -Method Get
+if ($null -eq $bookResponse -or $bookResponse.Count -eq 0) {
+    Write-Host "No books found in the database."
+} else {
+    $bookResponse | Format-Table -Property BookTitle, Id, Isbn, Edition, ReleaseYear, IsAvailable
+}
+
+#####
+
+Write-Host "Verifying BookInfoAuthor cascading delete"
+$bookInfoAuthorResponse = Invoke-RestMethod -Uri "$baseUrl/api/BookInfoAuthors" -Method Get
+if ($null -eq $bookInfoAuthorResponse -or $bookInfoAuthorResponse.Count -eq 0) {
+    Write-Host "No books found in the database."
+} else {
+    $bookInfoAuthorResponse | Format-Table -Property Id, BookInfoId, BookTitle, AuthorId, AuthorName
+}
+
+######## Delete Authors ###################################################################
+
+Write-Host "Deleting Authors"
+for ($i = 1; $i -le 6; $i++) {
+    try {
+        Invoke-RestMethod -Uri "$authorApiUrl/$i" -Method Delete
+        Write-Host "Author with ID $i deleted successfully."
+    } catch {
+        Write-Host "Failed to delete Author with ID $i. Error: $($_.Exception.Message)" -ForegroundColor Red
+    }
+}
+
+######## DROP DATABASE ######################################
+if ($dropDatabase -or (Read-Host "Do you want to drop the database after all actions are complete? (y/n)").ToLower() -eq "y") {
+    # Drop the database
+    $dropMethod = Read-Host "Do you want to drop the database using SQL (1) or EF Core (2)? Enter 1 or 2"
+
+if ($dropMethod -eq "1") {
+    Invoke-Sqlcmd -ConnectionString $connectionString -Query "USE master;ALTER DATABASE $databaseName SET SINGLE_USER WITH ROLLBACK IMMEDIATE;DROP DATABASE $databaseName;"
+    Write-Host "Database $databaseName dropped via SQL at the end of operations." -ForegroundColor Green
+} elseif ($dropMethod -eq "2") {
+    dotnet ef database drop --force
+    Write-Host "Database dropped via EF Core." -ForegroundColor Green
+} else {
+    Write-Host "Invalid option selected. Please choose either 1 for SQL or 2 for EF Core." -ForegroundColor Red
+}
+    dotnet ef migrations remove
+    Write-Host "Migration history cleaned." -ForegroundColor Green
+}
 
 
 
