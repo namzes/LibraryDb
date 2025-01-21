@@ -163,7 +163,7 @@ Invoke-RestMethod -Uri $apiUrl -Method Get | Format-Table -Property Title, Descr
 
 ##### Get Book #############################################################################################
 
-Write-Host "Get BookInfo"
+Write-Host "Getting specific BookInfo"
 Invoke-RestMethod -Uri "$apiUrl/1" -Method Get | Format-Table -Property Title, Description, Rating, BooksInInventory, @{Name="Authors"; Expression={($_.Authors | ForEach-Object { "$($_.FirstName) $($_.LastName)" }) -join ", "}}
 
 ##### Post Authors ################################################################################################ 
@@ -402,7 +402,7 @@ for ($i = 1; $i -le 6; $i++) {
     }
 }
 
-######## DROP DATABASE ######################################
+####### DROP DATABASE ######################################
 if ($dropDatabase -or (Read-Host "Do you want to drop the database after all actions are complete? (y/n)").ToLower() -eq "y") {
     # Drop the database
     $dropMethod = Read-Host "Do you want to drop the database using SQL (1) or EF Core (2)? Enter 1 or 2"
@@ -410,24 +410,20 @@ if ($dropDatabase -or (Read-Host "Do you want to drop the database after all act
 if ($dropMethod -eq "1") {
     Invoke-Sqlcmd -ConnectionString $connectionString -Query "USE master;ALTER DATABASE $databaseName SET SINGLE_USER WITH ROLLBACK IMMEDIATE;DROP DATABASE $databaseName;"
     Write-Host "Database $databaseName dropped via SQL at the end of operations." -ForegroundColor Green
+    dotnet ef migrations remove --project ".\$projectName\$projectName.csproj"
+    Write-Host "Migration history cleaned." -ForegroundColor Green
 } elseif ($dropMethod -eq "2") {
     dotnet ef database drop --force
     Write-Host "Database dropped via EF Core." -ForegroundColor Green
+    dotnet ef migrations remove --project ".\$projectName\$projectName.csproj"
+    Write-Host "Migration history cleaned." -ForegroundColor Green
 } else {
     Write-Host "Invalid option selected. Please choose either 1 for SQL or 2 for EF Core." -ForegroundColor Red
 }
-    dotnet ef migrations remove
-    Write-Host "Migration history cleaned." -ForegroundColor Green
+    
 }
 
-
-
-
-
-
-
-
-
+Write-Host "If you want to run the script again, don't forget to close the projects terminal window."
 
 
 # Define the list of movie data

@@ -66,7 +66,6 @@ namespace LibraryDb.Controllers
 	        var loanData = await _context.Loans.Include(l => l.BookLoanCard)
 		        .ThenInclude(bc => bc.Book)
 		        .ThenInclude(b => b.BookInfo)
-		       
 		        .Where(l => l.BookLoanCard.LoanCard.Id == loanCard.Id)
 		        .Select(l => new BookLoanDate
 		        {

@@ -24,6 +24,10 @@ namespace LibraryDb.Model.LibraryContext
 			modelBuilder.Entity<Book>()
 				.HasIndex(b => b.Isbn)
 				.IsUnique();
+
+			modelBuilder.Entity<BookInfo>()
+				.Property(b => b.Rating)
+				.HasPrecision(3, 1);
 		}
 
 	}

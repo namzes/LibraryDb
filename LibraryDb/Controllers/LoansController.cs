@@ -156,6 +156,7 @@ namespace LibraryDb.Controllers
 		        .ThenInclude(bcl => bcl.LoanCard)
 		        .ThenInclude(lc => lc.Customer)
 		        .FirstOrDefaultAsync(l => l.Id == id);
+
 	        if (loan == null)
 	        {
 		        return NotFound();

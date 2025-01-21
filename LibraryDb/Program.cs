@@ -28,12 +28,7 @@ namespace LibraryDb
             builder.Services.AddSwaggerGen();
 
 			var app = builder.Build();
-			using (var scope = app.Services.CreateScope())
-			{
-				var db = scope.ServiceProvider.GetRequiredService<LibraryContext>();
-				db.Database.EnsureDeleted();
-                db.Database.EnsureCreated();
-			}
+            
 
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
@@ -50,6 +45,8 @@ namespace LibraryDb
             app.MapControllers();
 
             app.Run();
-        }
+
+           
+		}
     }
 }

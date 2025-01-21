@@ -81,7 +81,7 @@ namespace LibraryDb.Controllers
 
             if (dto.BookInfoId != null)
             {
-				var bookInfo = _context.BookInfos.Find(dto.BookInfoId);
+				var bookInfo = await _context.BookInfos.FindAsync(dto.BookInfoId);
 
 	            if (bookInfo != null) book.BookInfo = bookInfo;
             }
