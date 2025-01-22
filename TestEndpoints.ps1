@@ -5,17 +5,25 @@ param(
     [string]$connectionStringKey = "BooksDb",
     [bool]$dropDatabase = $false,
     [bool]$createDatabase = $false,
-    [string] $baseUrl = "https://localhost:7086"
+    [string] $baseUrl
 )
 
 $projectName = Get-ChildItem -Recurse -Filter "*.csproj" | Select-Object -First 1 | ForEach-Object { $_.Directory.Name }
 
 # Get the base URL of the project
 $launchSettings = Get-Content -LiteralPath ".\$projectName\Properties\launchSettings.json" | ConvertFrom-Json
-$baseUrl = ($launchSettings.profiles.$launchProfile.applicationUrl -split ";")[0] # Can also set manually -> $baseUrl = "https://localhost:7253"
+
+if ([string]::IsNullOrEmpty($baseUrl)){
+    $baseUrl = ($launchSettings.profiles.$launchProfile.applicationUrl -split ";")[0] # Can also set manually -> $baseUrl = "https://localhost:7253"
+}
+if ([string]::IsNullOrEmpty($baseUrl))
+{
+    Write-Error "Please provide a domain Url"
+    Exit
+}
 
 #Install module SqlServer
-if (-not (Get-Module -ErrorAction Ignore -ListAvailable SqlServer)) {
+if (y-not (Get-Module -ErrorAction Ignore -ListAvailable SqlServer)) {
     Write-Verbose "Installing SqlServer module for the current user..."
     Install-Module -Scope CurrentUser SqlServer -ErrorAction Stop
 }
@@ -68,7 +76,7 @@ if(Select-String -LiteralPath ".\$projectName\Program.cs" -Pattern "EnsureCreate
 
 # Run the application
 if((Read-Host "Start the server from Visual studio? (y/n)").ToLower() -ne "y") { 
-    Start-Process -FilePath "dotnet" -ArgumentList "run --launch-profile $launchProfile --project .\$projectName\$projectName.csproj" -WindowStyle Normal    
+    $myServer = Start-Process -FilePath "dotnet" -ArgumentList "run --launch-profile $launchProfile --project .\$projectName\$projectName.csproj" -WindowStyle Normal -PassThru 
     Write-Host "Wait for the server to start..." -ForegroundColor Yellow 
 }
 
@@ -423,19 +431,5 @@ if ($dropMethod -eq "1") {
     
 }
 
-Write-Host "If you want to run the script again, don't forget to close the projects terminal window."
-
-
-# Define the list of movie data
-# $movies = @(
-#     @{ Title = "Inception"; ReleaseYear = 2010 },
-#     @{ Title = "The Dark Knight"; ReleaseYear = 2008 },
-#     @{ Title = "The Shawshank Redemption"; ReleaseYear = 1994 },
-#     @{ Title = "The Godfather"; ReleaseYear = 1972 }
-# )
-
-
-
-# $movies | Foreach-Object { Invoke-RestMethod -Uri $apiUrl -Method Post -Body ($_ | ConvertTo-Json) -ContentType "application/json" } | Format-Table
-
+Stop-Process -InputObject $myServer
 

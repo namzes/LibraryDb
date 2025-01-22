@@ -5,7 +5,7 @@
       "commandName": "Project",
       "dotnetRunMessages": true,
       "launchBrowser": true,
-      "applicationUrl": "http://localhost:5267",
+      "applicationUrl": "http://localhost",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
@@ -26,6 +26,16 @@
       "launchUrl": "swagger",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Azure"
+      },
+      "dotnetRunMessages": true,
+      "applicationUrl": "https://localhost:7086;http://localhost:5267"
+    },
+    "https-example": {
+      "commandName": "Project",
+      "launchBrowser": true,
+      "launchUrl": "swagger",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "example"
       },
       "dotnetRunMessages": true,
       "applicationUrl": "https://localhost:7086;http://localhost:5267"
