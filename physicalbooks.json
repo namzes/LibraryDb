@@ -1,0 +1,224 @@
+[
+    {
+        "Isbn": "978-0-06-112008-4",
+        "Edition": 1,
+        "ReleaseYear": 2006,
+        "BookInfoId": 1
+    },
+    {
+        "Isbn": "978-0-06-112008-5",
+        "Edition": 2,
+        "ReleaseYear": 2009,
+        "BookInfoId": 1
+    },
+    {
+        "Isbn": "978-0-7432-7356-5",
+        "Edition": 1,
+        "ReleaseYear": 2005,
+        "BookInfoId": 2
+    },
+    {
+        "Isbn": "978-1-4028-9462-6",
+        "Edition": 1,
+        "ReleaseYear": 2010,
+        "BookInfoId": 3
+    },
+    {
+        "Isbn": "978-1-4028-9463-3",
+        "Edition": 2,
+        "ReleaseYear": 2014,
+        "BookInfoId": 3
+    },
+    {
+        "Isbn": "978-0-452-28423-4",
+        "Edition": 1,
+        "ReleaseYear": 1999,
+        "BookInfoId": 4
+    },
+    {
+        "Isbn": "978-0-452-28423-5",
+        "Edition": 2,
+        "ReleaseYear": 2002,
+        "BookInfoId": 5
+    },
+    {
+        "Isbn": "978-1-5098-5039-3",
+        "Edition": 1,
+        "ReleaseYear": 2017,
+        "BookInfoId": 6
+    },
+    {
+        "Isbn": "978-1-5098-5040-9",
+        "Edition": 2,
+        "ReleaseYear": 2020,
+        "BookInfoId": 6
+    },
+    {
+        "Isbn": "978-0-525-51038-4",
+        "Edition": 1,
+        "ReleaseYear": 2015,
+        "BookInfoId": 7
+    },
+    {
+        "Isbn": "978-0-525-51039-1",
+        "Edition": 2,
+        "ReleaseYear": 2018,
+        "BookInfoId": 7
+    },
+    {
+        "Isbn": "978-0-06-245781-3",
+        "Edition": 1,
+        "ReleaseYear": 2016,
+        "BookInfoId": 8
+    },
+    {
+        "Isbn": "978-0-06-245781-4",
+        "Edition": 2,
+        "ReleaseYear": 2018,
+        "BookInfoId": 8
+    },
+    {
+        "Isbn": "978-0-06-241287-9",
+        "Edition": 1,
+        "ReleaseYear": 2013,
+        "BookInfoId": 9
+    },
+    {
+        "Isbn": "978-1-59184-209-9",
+        "Edition": 1,
+        "ReleaseYear": 2005,
+        "BookInfoId": 10
+    },
+    {
+        "Isbn": "978-1-59184-210-5",
+        "Edition": 2,
+        "ReleaseYear": 2007,
+        "BookInfoId": 10
+    },
+    {
+        "Isbn": "978-0-06-245780-6",
+        "Edition": 1,
+        "ReleaseYear": 2014,
+        "BookInfoId": 11
+    },
+    {
+        "Isbn": "978-0-06-245780-7",
+        "Edition": 2,
+        "ReleaseYear": 2017,
+        "BookInfoId": 12
+    },
+    {
+        "Isbn": "978-0-14-312316-3",
+        "Edition": 1,
+        "ReleaseYear": 2012,
+        "BookInfoId": 13
+    },
+    {
+        "Isbn": "978-0-14-312317-0",
+        "Edition": 2,
+        "ReleaseYear": 2015,
+        "BookInfoId": 13
+    },
+    {
+        "Isbn": "978-0-307-35142-3",
+        "Edition": 1,
+        "ReleaseYear": 2008,
+        "BookInfoId": 14
+    },
+    {
+        "Isbn": "978-0-307-35143-0",
+        "Edition": 2,
+        "ReleaseYear": 2011,
+        "BookInfoId": 15
+    },
+    {
+        "Isbn": "978-0-14-024052-3",
+        "Edition": 1,
+        "ReleaseYear": 1989,
+        "BookInfoId": 16
+    },
+    {
+        "Isbn": "978-0-14-024053-0",
+        "Edition": 2,
+        "ReleaseYear": 1995,
+        "BookInfoId": 17
+    },
+    {
+        "Isbn": "978-0-452-28424-1",
+        "Edition": 1,
+        "ReleaseYear": 2000,
+        "BookInfoId": 18
+    },
+    {
+        "Isbn": "978-0-452-28424-2",
+        "Edition": 2,
+        "ReleaseYear": 2003,
+        "BookInfoId": 18
+    },
+    {
+        "Isbn": "978-1-4028-9464-3",
+        "Edition": 1,
+        "ReleaseYear": 2012,
+        "BookInfoId": 19
+    },
+    {
+        "Isbn": "978-1-4028-9465-0",
+        "Edition": 2,
+        "ReleaseYear": 2015,
+        "BookInfoId": 20
+    },
+    {
+        "Isbn": "978-0-7432-7357-2",
+        "Edition": 1,
+        "ReleaseYear": 2007,
+        "BookInfoId": 1
+    },
+    {
+        "Isbn": "978-0-7432-7357-3",
+        "Edition": 2,
+        "ReleaseYear": 2010,
+        "BookInfoId": 1
+    },
+    {
+        "Isbn": "978-0-452-28425-1",
+        "Edition": 1,
+        "ReleaseYear": 2010,
+        "BookInfoId": 2
+    },
+    {
+        "Isbn": "978-0-452-28425-2",
+        "Edition": 2,
+        "ReleaseYear": 2012,
+        "BookInfoId": 3
+    },
+    {
+        "Isbn": "978-0-525-51040-7",
+        "Edition": 1,
+        "ReleaseYear": 2015,
+        "BookInfoId": 4
+    },
+    {
+        "Isbn": "978-0-525-51041-4",
+        "Edition": 2,
+        "ReleaseYear": 2018,
+        "BookInfoId": 5
+    },
+    {
+        "Isbn": "978-0-14-312319-4",
+        "Edition": 1,
+        "ReleaseYear": 2019,
+        "BookInfoId": 6
+    },
+    {
+        "Isbn": "978-0-14-312320-0",
+        "Edition": 2,
+        "ReleaseYear": 2021,
+        "BookInfoId": 7
+    },
+    {
+        "Isbn": "978-0-307-35144-7",
+        "Edition": 1,
+        "ReleaseYear": 2008,
+        "BookInfoId": 9
+    }
+]

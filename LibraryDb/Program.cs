@@ -26,6 +26,13 @@ namespace LibraryDb
 
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
+            builder.Services.AddCors(options =>
+            {
+	            options.AddPolicy("AllowAll", builder =>
+		            builder.AllowAnyOrigin()
+			            .AllowAnyMethod()
+			            .AllowAnyHeader());
+            });
 
 			var app = builder.Build();
             
@@ -38,11 +45,12 @@ namespace LibraryDb
 			}
 
             app.UseHttpsRedirection();
+            app.UseCors("AllowAll");
 
-            app.UseAuthorization();
+			app.UseAuthorization();
 
-
-            app.MapControllers();
+            
+			app.MapControllers();
 
             app.Run();
 

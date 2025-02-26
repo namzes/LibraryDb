@@ -1,0 +1,302 @@
+[
+  {
+    "Title": "Harry Potter and the Sorcerer's Stone",
+    "Description": "A young boy discovers he's a wizard and attends Hogwarts School of Witchcraft and Wizardry.",
+    "Rating": 9,
+    "BooksInInventory": 5,
+    "Authors": [
+      {
+        "FirstName": "J.K.",
+        "LastName": "Rowling"
+      }
+    ]
+  },
+  {
+    "Title": "The Hobbit",
+    "Description": "A hobbit embarks on a quest to recover treasure guarded by a dragon.",
+    "Rating": 8,
+    "BooksInInventory": 7,
+    "Authors": [
+      {
+        "FirstName": "J.R.R.",
+        "LastName": "Tolkien"
+      }
+    ]
+  },
+  {
+    "Title": "To Kill a Mockingbird",
+    "Description": "A young girl learns about racism and justice in the South during the 1930s.",
+    "Rating": 10,
+    "BooksInInventory": 10,
+    "Authors": [
+      {
+        "FirstName": "Harper",
+        "LastName": "Lee"
+      }
+    ]
+  },
+  {
+    "Title": "1984",
+    "Description": "A dystopian novel about a totalitarian regime that uses surveillance and control to maintain power.",
+    "Rating": 9,
+    "BooksInInventory": 5,
+    "Authors": [
+      {
+        "FirstName": "George",
+        "LastName": "Orwell"
+      }
+    ]
+  },
+  {
+    "Title": "The Great Gatsby",
+    "Description": "A tale of love, wealth, and corruption set during the Roaring Twenties.",
+    "Rating": 8,
+    "BooksInInventory": 6,
+    "Authors": [
+      {
+        "FirstName": "F. Scott",
+        "LastName": "Fitzgerald"
+      }
+    ]
+  },
+  {
+    "Title": "Pride and Prejudice",
+    "Description": "A witty exploration of love and social standing in 19th-century England.",
+    "Rating": 9,
+    "BooksInInventory": 4,
+    "Authors": [
+      {
+        "FirstName": "Jane",
+        "LastName": "Austen"
+      }
+    ]
+  },
+  {
+    "Title": "The Catcher in the Rye",
+    "Description": "A disillusioned teenager narrates his life in New York City and his quest for identity.",
+    "Rating": 7,
+    "BooksInInventory": 8,
+    "Authors": [
+      {
+        "FirstName": "J.D.",
+        "LastName": "Salinger"
+      }
+    ]
+  },
+  {
+    "Title": "Moby-Dick",
+    "Description": "Captain Ahab's obsessive quest to hunt the great white whale, Moby Dick.",
+    "Rating": 7,
+    "BooksInInventory": 5,
+    "Authors": [
+      {
+        "FirstName": "Herman",
+        "LastName": "Melville"
+      }
+    ]
+  },
+  {
+    "Title": "The Chronicles of Narnia",
+    "Description": "A series of seven fantasy novels set in the magical land of Narnia.",
+    "Rating": 8,
+    "BooksInInventory": 9,
+    "Authors": [
+      {
+        "FirstName": "C.S.",
+        "LastName": "Lewis"
+      }
+    ]
+  },
+  {
+    "Title": "War and Peace",
+    "Description": "A historical epic set during the Napoleonic wars in Russia.",
+    "Rating": 9,
+    "BooksInInventory": 4,
+    "Authors": [
+      {
+        "FirstName": "Leo",
+        "LastName": "Tolstoy"
+      }
+    ]
+  },
+  {
+    "Title": "The Picture of Dorian Gray",
+    "Description": "A young man’s portrait ages while he remains eternally young and beautiful, as he descends into corruption.",
+    "Rating": 8,
+    "BooksInInventory": 6,
+    "Authors": [
+      {
+        "FirstName": "Oscar",
+        "LastName": "Wilde"
+      }
+    ]
+  },
+  {
+    "Title": "Frankenstein",
+    "Description": "A scientist creates a creature in an unorthodox scientific experiment, with tragic results.",
+    "Rating": 7,
+    "BooksInInventory": 5,
+    "Authors": [
+      {
+        "FirstName": "Mary",
+        "LastName": "Shelley"
+      }
+    ]
+  },
+  {
+    "Title": "Brave New World",
+    "Description": "In a future society that has eliminated suffering, individuality and freedom are sacrificed for stability.",
+    "Rating": 8,
+    "BooksInInventory": 7,
+    "Authors": [
+      {
+        "FirstName": "Aldous",
+        "LastName": "Huxley"
+      }
+    ]
+  },
+  {
+    "Title": "The Lord of the Rings: The Fellowship of the Ring",
+    "Description": "The first part of the epic fantasy trilogy about the quest to destroy the One Ring.",
+    "Rating": 10,
+    "BooksInInventory": 8,
+    "Authors": [
+      {
+        "FirstName": "J.R.R.",
+        "LastName": "Tolkien"
+      }
+    ]
+  },
+  {
+    "Title": "The Hunger Games",
+    "Description": "In a dystopian future, children are selected to fight in a televised death match.",
+    "Rating": 9,
+    "BooksInInventory": 5,
+    "Authors": [
+      {
+        "FirstName": "Suzanne",
+        "LastName": "Collins"
+      }
+    ]
+  },
+  {
+    "Title": "The Da Vinci Code",
+    "Description": "A professor unravels a secret hidden in Leonardo da Vinci’s works.",
+    "Rating": 8,
+    "BooksInInventory": 6,
+    "Authors": [
+      {
+        "FirstName": "Dan",
+        "LastName": "Brown"
+      }
+    ]
+  },
+  {
+    "Title": "The Girl with the Dragon Tattoo",
+    "Description": "A journalist and a hacker investigate a wealthy family’s dark secrets.",
+    "Rating": 9,
+    "BooksInInventory": 7,
+    "Authors": [
+      {
+        "FirstName": "Stieg",
+        "LastName": "Larsson"
+      }
+    ]
+  },
+  {
+    "Title": "The Shining",
+    "Description": "A family’s stay in an isolated hotel leads to supernatural horrors and madness.",
+    "Rating": 9,
+    "BooksInInventory": 5,
+    "Authors": [
+      {
+        "FirstName": "Stephen",
+        "LastName": "King"
+      }
+    ]
+  },
+  {
+    "Title": "The Road",
+    "Description": "A father and son navigate a post-apocalyptic world in search of survival.",
+    "Rating": 9,
+    "BooksInInventory": 8,
+    "Authors": [
+      {
+        "FirstName": "Cormac",
+        "LastName": "McCarthy"
+      }
+    ]
+  },
+  {
+    "Title": "The Outsiders",
+    "Description": "A group of teenagers struggle with social class differences and violence.",
+    "Rating": 8,
+    "BooksInInventory": 10,
+    "Authors": [
+      {
+        "FirstName": "S.E.",
+        "LastName": "Hinton"
+      }
+    ]
+  },
+  {
+    "Title": "The Catcher in the Rye",
+    "Description": "A disillusioned teenager narrates his life in New York City and his quest for identity.",
+    "Rating": 7,
+    "BooksInInventory": 6,
+    "Authors": [
+      {
+        "FirstName": "J.D.",
+        "LastName": "Salinger"
+      }
+    ]
+  },
+  {
+    "Title": "Catch-22",
+    "Description": "A satirical novel about the absurdity of war and the bureaucratic insanity surrounding it.",
+    "Rating": 9,
+    "BooksInInventory": 5,
+    "Authors": [
+      {
+        "FirstName": "Joseph",
+        "LastName": "Heller"
+      }
+    ]
+  },
+  {
+    "Title": "The Secret Garden",
+    "Description": "A young girl discovers a hidden garden that transforms her life and those around her.",
+    "Rating": 8,
+    "BooksInInventory": 5,
+    "Authors": [
+      {
+        "FirstName": "Frances",
+        "LastName": "Hodgson Burnett"
+      }
+    ]
+  },
+  {
+    "Title": "Little Women",
+    "Description": "The four March sisters grow up and navigate challenges of love, loss, and ambition.",
+    "Rating": 9,
+    "BooksInInventory": 6,
+    "Authors": [
+      {
+        "FirstName": "Louisa May",
+        "LastName": "Alcott"
+      }
+    ]
+  },
+  {
+    "Title": "Don Quixote",
+    "Description": "The story of a deluded knight and his squire on adventures filled with comical misadventures.",
+    "Rating": 9,
+    "BooksInInventory": 4,
+    "Authors": [
+      {
+        "FirstName": "Miguel de",
+        "LastName": "Cervantes"
+      }
+    ]
+  }
+]
